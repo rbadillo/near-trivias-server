@@ -1,2 +1,2 @@
-# near-trivia
-Descubre Near Trivia
+#near-trivias-server
+Descubre Near Trivias - Server Side
