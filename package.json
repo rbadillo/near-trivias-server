@@ -1,0 +1,10 @@
+{
+  "name": "AppServer",
+  "version": "0.0.1",
+  "description": "Trivias Near - App Server",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.15.2",
+    "socket.io": "^1.7.3"
+  }
+}
