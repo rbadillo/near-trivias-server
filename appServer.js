@@ -16,6 +16,10 @@ var player_object = {
   "last_msg": null
 }
 
+var active_players_count = {
+  "count":0
+}
+
 // Epoch Time
 function seconds_since_epoch(){ 
   return Math.floor( Date.now() / 1000 ) 
@@ -177,6 +181,13 @@ io.on('connection', function(socket){
   console.log("Active Players")
   console.log(active_players)
 });
+
+// Active Players
+setInterval(function () {
+    active_players_count["count"]=Object.keys(active_players).length
+    io.emit('active_players_count',active_players_count)
+}, 10000)
+
 
 http.listen(port, function(){
   console.log('listening on *:' + port);
