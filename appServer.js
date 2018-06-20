@@ -2,7 +2,7 @@ var app = require('express')();
 var express = require('express');
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-var port = process.env.PORT || 5000;
+var port = process.env.PORT || 10000;
 var bodyParser = require('body-parser')
 
 app.use(bodyParser.json());
@@ -27,7 +27,7 @@ function seconds_since_epoch(){
 
 // Get Client HTML
 app.get('/', function(req, res){
-  res.sendFile(__dirname + '/index.html');
+  res.send('health check')
 });
 
 // Trivia Near - Posting a new question
@@ -190,5 +190,5 @@ setInterval(function () {
 
 
 http.listen(port, function(){
-  console.log('listening on *:' + port);
+  console.log('appServer listening on *:' + port);
 });
