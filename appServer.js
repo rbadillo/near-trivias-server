@@ -4,6 +4,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var port = process.env.PORT || 10000;
 var bodyParser = require('body-parser')
+var moment = require('moment')
 
 app.use(bodyParser.json());
 
@@ -41,9 +42,9 @@ app.post('/', function(req, res){
   console.log("Active Players After Posting a question")
   console.log(active_players)
 
-  var epoch_time = seconds_since_epoch();
+  var server_utc_time = moment().utc()
 
-  req.body["epoch"]=epoch_time;
+  req.body["server_utc_time"]=server_utc_time;
 
   io.emit('contest',req.body);
   last_question = req.body
