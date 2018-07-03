@@ -75,24 +75,20 @@ app.post('/verify', function(req, res){
 
       var winner_player = Object.keys(active_players)[0]
 
-      var winner = {
-        msg : "CONGRATULATIONS, " +winner_player +" WON NEAR TRIVIA"
-      }
+      last_question["final_message"] = "Felicidades, " +winner_player +" ganaste Trivias Near!"
 
       var winner_user = Object.keys(active_players)
       active_players[winner_user[0]].last_msg = winner.msg
 
-      io.emit('end_game',winner)
+      io.emit('end_game',last_question)
     } 
     else if(Object.keys(active_players).length == 0)
     {
       console.log("WE HAVE A TIE")
 
-      var tie = {
-        msg : "SORRY, WE HAVE A TIE"
-      }
+      last_question["final_message"] = "Lo sentimos pero tuvimos un empate"
 
-      io.emit('end_game',tie)
+      io.emit('end_game',last_question)
     }
     else
     {
