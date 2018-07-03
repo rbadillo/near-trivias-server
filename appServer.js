@@ -151,7 +151,7 @@ io.on('connection', function(socket){
   {
 
     console.log("Sorry, You are late: " +player)
-    last_question["sorry"] = "Sorry, you can't play tonight. Enjoy the game!"
+    last_question["sorry_message"] = "Lo sentimos pero el juego de esta noche ya comenzó, nos vemos a la próxima!"
 
     socket.emit("game_is_already_on",last_question)
   }
