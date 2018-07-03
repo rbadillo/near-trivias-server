@@ -44,7 +44,7 @@ app.post('/', function(req, res){
   is_game_on = true
 
   console.log("Set Timeout")
-  
+
   setTimeout(function () {
 
   	  console.log("Fire Timeout")
@@ -98,6 +98,8 @@ app.post('/verify', function(req, res){
     {
       io.emit('verify_answer',last_question)
     }
+
+    res.end();
 
 })
 
