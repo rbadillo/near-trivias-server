@@ -74,11 +74,12 @@ app.post('/verify', function(req, res){
       console.log("WE HAVE A WINNER")
 
       var winner_player = Object.keys(active_players)[0]
+      var winner_msg = "Felicidades, " +winner_player +" ganaste Trivias Near!"
 
-      last_question["final_message"] = "Felicidades, " +winner_player +" ganaste Trivias Near!"
+      last_question["final_message"] = winner_msg
 
       var winner_user = Object.keys(active_players)
-      active_players[winner_user[0]].last_msg = winner.msg
+      active_players[winner_user[0]].last_msg = winner_msg
 
       io.emit('end_game',last_question)
     } 
