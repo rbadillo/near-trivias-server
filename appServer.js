@@ -75,6 +75,11 @@ app.post('/verify', function(req, res){
     console.log("Active Players Count")
     console.log(Object.keys(active_players).length)
 
+    console.log("players_answer_distribution")
+    console.log(players_answer_distribution)
+
+    last_question["answer_distribution"] = players_answer_distribution
+
     // WE HAVE A WINNER
     if(Object.keys(active_players).length == 1)
     {
@@ -103,8 +108,7 @@ app.post('/verify', function(req, res){
       io.emit('verify_answer',last_question)
     }
 
-    console.log("players_answer_distribution")
-    console.log(players_answer_distribution)
+
 
     res.end();
 
