@@ -21,6 +21,13 @@ var active_players_count = {
   "count":0
 }
 
+var players_answer_distribution = {
+  "1":0,
+  "2":0,
+  "3":0,
+  "4":0
+}
+
 // Get Client HTML
 app.get('/', function(req, res){
   res.send('health check')
@@ -96,6 +103,9 @@ app.post('/verify', function(req, res){
       io.emit('verify_answer',last_question)
     }
 
+    console.log("players_answer_distribution")
+    console.log(players_answer_distribution)
+
     res.end();
 
 })
@@ -109,6 +119,8 @@ app.post('/answer', function(req, res){
   var answer = req.body.answer;
 
   active_players[user].answer = answer;
+
+  players_answer_distribution[answer] = players_answer_distribution[answer] + 1
 
   if(active_players[user].last_msg == null)
   {
