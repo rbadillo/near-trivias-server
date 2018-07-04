@@ -108,8 +108,13 @@ app.post('/verify', function(req, res){
       io.emit('verify_answer',last_question)
     }
 
-
-
+    players_answer_distribution = {
+        "1":0,
+        "2":0,
+        "3":0,
+        "4":0
+    }
+    
     res.end();
 
 })
