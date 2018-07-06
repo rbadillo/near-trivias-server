@@ -140,53 +140,9 @@ app.post('/verify', function(req, res){
 
 io.on('connection', function(socket){
 
-  console.log("appServer Connected - " +socket.id)
-  console.log(socket)
-  console.log(dir(socket))
+  var address = socket.handshake.address;
+  console.log('New appServer connection from ' + address.address + ':' + address.port);
 
-  var player = socket.handshake.query.username
-
-  if(!is_game_on && !active_players.hasOwnProperty(player))
-  {
-    console.log("Adding Player to active_players")
-    var plyr_object = Object.assign({}, player_object);
-    active_players[player] = plyr_object;
-  }
-
-  if(is_game_on && !active_players.hasOwnProperty(player))
-  {
-
-    console.log("Sorry, You are late: " +player)
-    last_question["sorry_message"] = "Lo sentimos pero el juego de esta noche ya comenzó, nos vemos a la próxima!"
-
-    socket.emit("game_is_already_on",last_question)
-  }
-
-  if(is_game_on && last_question!=null && active_players.hasOwnProperty(player) && active_players[player].last_msg!=null)
-  {
-    console.log("This user already submitted an answer")
-
-   var answer_submitted = Object.assign({}, last_question);
-   answer_submitted["msg"] = active_players[player].last_msg
-
-   console.log(answer_submitted)
-
-    setTimeout(function () {
-          socket.emit('answer_already_submitted',answer_submitted)
-    }, 50)
-  }
-  else if(is_game_on && last_question!=null && active_players.hasOwnProperty(player))
-  {
-    console.log("Emiting Last Question")
-    console.log(last_question)
-
-    setTimeout(function () {
-          socket.emit('contest',last_question)
-    }, 50)
-  }
-
-  console.log("Active Players")
-  console.log(active_players)
 });
 
 // Active Players
