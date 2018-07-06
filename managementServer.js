@@ -140,8 +140,8 @@ app.post('/verify', function(req, res){
 
 io.on('connection', function(socket){
 
-  var address = socket.handshake.address;
-  console.log('New appServer connection from ' + address.address + ':' + address.port);
+  var client_address = socket.handshake.address;
+  console.log('New appServer connection from ' +client_address);
 
 });
 
