@@ -78,6 +78,22 @@ app.post('/verify', function(req, res){
     console.log("players_answer_distribution")
     console.log(players_answer_distribution)
 
+    var max_length = players_answer_distribution["1"].length;
+
+    for(var key in players_answer_distribution){
+      if(players_answer_distribution[key].length>max_length)
+      {
+        max_length = players_answer_distribution[key].length
+      }
+    }
+
+    for(var key in players_answer_distribution){
+      if(players_answer_distribution[key].length<max_length)
+      {
+        players_answer_distribution[key] = players_answer_distribution[key].padEnd(max_length-players_answer_distribution[key].length)
+      }
+    }
+
     last_question["answer_distribution"] = players_answer_distribution
 
     // WE HAVE A WINNER
