@@ -91,7 +91,7 @@ app.post('/verify', function(req, res){
       if(players_answer_distribution[key].length<max_length)
       {
         var tmp = players_answer_distribution[key]
-        tmp = tmp.padEnd(max_length-players_answer_distribution[key].length)
+        tmp = tmp.padStart(max_length,"0")
         players_answer_distribution[key] = tmp
       }
     }
