@@ -140,7 +140,9 @@ app.post('/verify', function(req, res){
 
 io.on('connection', function(socket){
 
-  console.log("User Connected")
+  console.log("appServer Connected - " +socket.id)
+  console.log(socket)
+  console.log(dir(socket))
 
   var player = socket.handshake.query.username
 
