@@ -90,7 +90,9 @@ app.post('/verify', function(req, res){
     for(var key in players_answer_distribution){
       if(players_answer_distribution[key].length<max_length)
       {
-        players_answer_distribution[key] = players_answer_distribution[key].padEnd(max_length-players_answer_distribution[key].length)
+        var tmp = players_answer_distribution[key]
+        tmp = tmp.padEnd(max_length-players_answer_distribution[key].length)
+        players_answer_distribution[key] = tmp
       }
     }
 
