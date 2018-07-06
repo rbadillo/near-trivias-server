@@ -233,7 +233,6 @@ setInterval(function () {
 
 
 http.listen(port, function(){
-
   var management_server_url = "http://127.0.0.1:11000"
   socket_client = io_client(management_server_url)
   redis_client.on('connect', function() {
