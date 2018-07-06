@@ -22,10 +22,10 @@ var active_players_count = {
 }
 
 var players_answer_distribution = {
-  "1":0,
-  "2":0,
-  "3":0,
-  "4":0
+  "1": "0",
+  "2": "0",
+  "3": "0",
+  "4": "0"
 }
 
 // Get Client HTML
@@ -114,7 +114,7 @@ app.post('/verify', function(req, res){
         "3":0,
         "4":0
     }
-    
+
     res.end();
 
 })
@@ -129,7 +129,7 @@ app.post('/answer', function(req, res){
 
   active_players[user].answer = answer;
 
-  players_answer_distribution[answer] = players_answer_distribution[answer] + 1
+  players_answer_distribution[answer] = (parseInt(players_answer_distribution[answer]) + 1).toString()
 
   if(active_players[user].last_msg == null)
   {
