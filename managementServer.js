@@ -2,14 +2,12 @@ var app = require('express')();
 var express = require('express');
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-var io_client = require('socket.io-client');
-var port = process.env.PORT || 10000;
+var port = process.env.PORT || 11000;
 var bodyParser = require('body-parser')
 var redis = require('redis');
 
 app.use(bodyParser.json());
 var redis_client = redis.createClient(6379, '127.0.0.1');
-var socket_client = null;
 
 var last_question = null;
 var is_game_on= false;
@@ -140,42 +138,6 @@ app.post('/verify', function(req, res){
 
 })
 
-app.post('/answer', function(req, res){
-
-  console.log("Answer")
-  console.log(req.body)
-
-  var user = req.body.user;
-  var answer = req.body.answer;
-
-  active_players[user].answer = answer;
-
-  players_answer_distribution[answer] = (parseInt(players_answer_distribution[answer]) + 1).toString()
-
-  if(active_players[user].last_msg == null)
-  {
-    var response = {
-    	msg : ""
-    }
-
-    if(answer == last_question.answer)
-    {
-    	response.msg = "CONGRATULATIONS, KEEP PLAYING"
-    	res.end(JSON.stringify(response))
-    }
-    else
-    {
-    	response.msg = "GAME OVER"
-    	res.end(JSON.stringify(response))
-    }
-
-    active_players[user].last_msg = response.msg
-  }
-
-  console.log("Activa Players - After Answer POST")
-  console.log(active_players)
-});
-
 io.on('connection', function(socket){
 
   console.log("User Connected")
@@ -233,11 +195,8 @@ setInterval(function () {
 
 
 http.listen(port, function(){
-
-  var management_server_url = "http://127.0.0.1:11000"
-  socket_client = io_client(management_server_url)
   redis_client.on('connect', function() {
-    console.log('appServer listening on *:' + port);
-    console.log('connected to redis server');
+    console.log('managementServer listening on *:' + port);
+    console.log('Connected to redis server');
   });
 });
