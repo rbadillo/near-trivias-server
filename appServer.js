@@ -4,9 +4,10 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var port = process.env.PORT || 10000;
 var bodyParser = require('body-parser')
-var moment = require('moment')
+var redis = require('redis');
 
 app.use(bodyParser.json());
+var redis_client = redis.createClient(6379, '127.0.0.1');
 
 var last_question = null;
 var is_game_on= false;
@@ -230,5 +231,8 @@ setInterval(function () {
 
 
 http.listen(port, function(){
-  console.log('appServer listening on *:' + port);
+  redis_client.on('connect', function() {
+    console.log('appServer listening on *:' + port);
+    console.log('connected to redis server');
+  });
 });
