@@ -50,23 +50,7 @@ app.post('/', function(req, res){
 
 });
 
-mgmt_socket_client.on('question', function(msg){
 
-
-  // Emit question to App
-  io.emit('contest',msg);
-  last_question = msg
-
-  is_game_on = true
-
-  console.log("Begin Timeout")
-  setTimeout(function () {
-      console.log("End Timeout")
-      // Emit Timeout Signal
-      io.emit('timeout',last_question)
-  }, 10000)
-
-})
 
 app.post('/verify', function(req, res){
 
@@ -182,51 +166,50 @@ app.post('/answer', function(req, res){
 
 io.on('connection', function(socket){
 
-  console.log("User Connected")
-
   var player = socket.handshake.query.username
+  var cache_key = "user_" +player
 
-  if(!is_game_on && !active_players.hasOwnProperty(player))
+  console.log("User Connected: " +player +" - cache key: " +cache_key)
+
+  if(!is_game_on)
   {
-    console.log("Adding Player to active_players")
-    var plyr_object = Object.assign({}, player_object);
-    active_players[player] = plyr_object;
+    client.exists(cache_key, function(err, reply){
+      if(err)
+      {
+        console.log("Error verifying key in redis cache: " +cache_key)
+      }
+      else if (reply == 1)
+      {
+          console.log('Player already in Redis Cache');
+      } 
+      else 
+      {
+          client.hmset(cache_key, {
+              'answer': 0,
+              'last_msg': null
+          });
+      }
+    });
   }
 
-  if(is_game_on && !active_players.hasOwnProperty(player))
+  if(is_game_on)
   {
-
-    console.log("Sorry, You are late: " +player)
-    last_question["sorry_message"] = "Lo sentimos pero el juego de esta noche ya comenzó, nos vemos a la próxima!"
-
-    socket.emit("game_is_already_on",last_question)
+    client.exists(cache_key, function(err, reply){
+        if(err)
+        {
+          console.log("Error verifying key in redis cache: " +cache_key)
+        }
+        else if (reply == 0)
+        {
+            console.log('Player is not in redis cache');
+            console.log("Sorry, You are late: " +player)
+            var late_msg = {
+              "sorry_message" : "Lo sentimos pero el juego de esta noche ya comenzó, nos vemos a la próxima!"
+            }
+            socket.emit("game_is_already_on",late_msg)
+        }
+    });
   }
-
-  if(is_game_on && last_question!=null && active_players.hasOwnProperty(player) && active_players[player].last_msg!=null)
-  {
-    console.log("This user already submitted an answer")
-
-   var answer_submitted = Object.assign({}, last_question);
-   answer_submitted["msg"] = active_players[player].last_msg
-
-   console.log(answer_submitted)
-
-    setTimeout(function () {
-          socket.emit('answer_already_submitted',answer_submitted)
-    }, 50)
-  }
-  else if(is_game_on && last_question!=null && active_players.hasOwnProperty(player))
-  {
-    console.log("Emiting Last Question")
-    console.log(last_question)
-
-    setTimeout(function () {
-          socket.emit('contest',last_question)
-    }, 50)
-  }
-
-  console.log("Active Players")
-  console.log(active_players)
 });
 
 // Active Players
@@ -238,9 +221,34 @@ setInterval(function () {
 
 http.listen(port, function(){
   var management_server_url = "http://127.0.0.1:11000"
-  mgmt_socket_client = io_client(management_server_url)
   redis_client.on('connect', function() {
     console.log('appServer listening on *:' + port);
     console.log('connected to redis server');
   });
 });
+
+
+// Management Server Code
+mgmt_socket_client = io_client(management_server_url)
+
+mgmt_socket_client.on('connect', function(){
+  console.log('Connected to Management Server')
+})
+
+mgmt_socket_client.on('question', function(msg){
+
+
+  // Emit question to App
+  io.emit('contest',msg);
+  last_question = msg
+
+  is_game_on = true
+
+  console.log("Begin Timeout")
+  setTimeout(function () {
+      console.log("End Timeout")
+      // Emit Timeout Signal
+      io.emit('timeout',last_question)
+  }, 10000)
+
+})
