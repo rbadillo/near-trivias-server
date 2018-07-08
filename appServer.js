@@ -167,13 +167,13 @@ app.post('/answer', function(req, res){
 io.on('connection', function(socket){
 
   var player = socket.handshake.query.username
-  var cache_key = "user_" +player
+  var cache_key = "player_" +player
 
   console.log("User Connected: " +player +" - cache key: " +cache_key)
 
   if(!is_game_on)
   {
-    client.exists(cache_key, function(err, reply){
+    redis_client.exists(cache_key, function(err, reply){
       if(err)
       {
         console.log("Error verifying key in redis cache: " +cache_key)
@@ -184,7 +184,7 @@ io.on('connection', function(socket){
       } 
       else 
       {
-          client.hmset(cache_key, {
+          redis_client.hmset(cache_key, {
               'answer': 0,
               'last_msg': null
           });
@@ -194,7 +194,7 @@ io.on('connection', function(socket){
 
   if(is_game_on)
   {
-    client.exists(cache_key, function(err, reply){
+    redis_client.exists(cache_key, function(err, reply){
         if(err)
         {
           console.log("Error verifying key in redis cache: " +cache_key)
