@@ -220,7 +220,6 @@ setInterval(function () {
 
 
 http.listen(port, function(){
-  var management_server_url = "http://127.0.0.1:11000"
   redis_client.on('connect', function() {
     console.log('appServer listening on *:' + port);
     console.log('connected to redis server');
@@ -229,6 +228,7 @@ http.listen(port, function(){
 
 
 // Management Server Code
+var management_server_url = "http://127.0.0.1:11000"
 mgmt_socket_client = io_client(management_server_url)
 
 mgmt_socket_client.on('connect', function(){
