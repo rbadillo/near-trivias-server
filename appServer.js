@@ -39,16 +39,20 @@ app.get('/', function(req, res){
 // Players posting their answers
 app.post('/answer', function(req, res){
 
-  console.log("Answer")
+  console.log("Player Posting Answer")
   console.log(req.body)
 
-  var user = req.body.user;
+  var player = req.body.player;
   var answer = req.body.answer;
 
-  active_players[user].answer = answer;
 
-  players_answer_distribution[answer] = (parseInt(players_answer_distribution[answer]) + 1).toString()
+  // active_players[user].answer = answer;
 
+  //players_answer_distribution[answer] = (parseInt(players_answer_distribution[answer]) + 1).toString()
+
+  redis_client.hincrby('players_answer_distribution',answer,1)
+
+  /*
   if(active_players[user].last_msg == null)
   {
     var response = {
@@ -68,18 +72,34 @@ app.post('/answer', function(req, res){
 
     active_players[user].last_msg = response.msg
   }
+  */
+  var cache_key = "player_" +player
 
-  console.log("Activa Players - After Answer POST")
-  console.log(active_players)
+  redis_client.exists(cache_key, function(err, reply){
+      if(err)
+      {
+        console.log("Error verifying key in redis cache: " +cache_key)
+      }
+      else if (reply == 1)
+      {
+          console.log('Player exist in Redis Cache');
+
+          redis_client.hmset(cache_key, {
+              'answer': answer,
+              'last_msg': "null"
+          });
+      }
+  })
 });
 
 // Players connecting to play
 io.on('connection', function(socket){
 
-  var player = socket.handshake.query.username
+  var player = socket.handshake.query.player
   var cache_key = "player_" +player
 
   console.log("User Connected: " +player +" - cache key: " +cache_key)
+  redis_client.incr('active_players_count');
 
   if(!is_game_on)
   {
@@ -98,8 +118,6 @@ io.on('connection', function(socket){
               'answer': "0",
               'last_msg': "null"
           });
-
-          redis_client.incr('active_players_count');
       }
     });
   }

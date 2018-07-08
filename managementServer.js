@@ -175,5 +175,25 @@ http.listen(port, function(){
         redis_client.set('active_players_count',0);
       }
     });
+
+    redis_client.exists('players_answer_distribution', function(err, reply){
+      if(err)
+      {
+        console.log("Error verifying key in redis cache: players_answer_distribution")
+      }
+      else if (reply == 1)
+      {
+        console.log('players_answer_distribution key already exist in Redis Cache');
+      } 
+      else 
+      {
+        redis_client.hmset('players_answer_distribution', {
+            '1': 0,
+            '2': 0,
+            '3': 0,
+            '4': 0,
+        });
+      }
+    });
   });
 });
