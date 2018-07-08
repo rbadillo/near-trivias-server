@@ -164,6 +164,8 @@ app.post('/answer', function(req, res){
   console.log(active_players)
 });
 
+// Players connecting to play
+
 io.on('connection', function(socket){
 
   var player = socket.handshake.query.username
@@ -185,9 +187,11 @@ io.on('connection', function(socket){
       else 
       {
           redis_client.hmset(cache_key, {
-              'answer': 0,
-              'last_msg': null
+              'answer': "0",
+              'last_msg': "null"
           });
+
+          redis_client.incr('active_players_count');
       }
     });
   }
@@ -210,19 +214,32 @@ io.on('connection', function(socket){
         }
     });
   }
+
+  socket.on('disconnect', function(){
+    console.log("User disconnected")
+    redis_client.decr('active_players_count');
+  });
 });
 
 // Active Players
 setInterval(function () {
-    active_players_count["count"]=Object.keys(active_players).length
-    io.emit('active_players_count',active_players_count)
+    redis_client.get('active_players_count', function(err, reply) {
+      if(err)
+      {
+        console.log("Error retriving active_players_count redis key")
+      }
+      else if(reply!=null)
+      {
+        console.log("Emiting active_players_count: " +reply)
+        io.emit('active_players_count',reply)
+      }
+    });
 }, 10000)
-
 
 http.listen(port, function(){
   redis_client.on('connect', function() {
     console.log('appServer listening on *:' + port);
-    console.log('connected to redis server');
+    console.log('Connected to redis server');
   });
 });
 
@@ -236,7 +253,6 @@ mgmt_socket_client.on('connect', function(){
 })
 
 mgmt_socket_client.on('question', function(msg){
-
 
   // Emit question to App
   io.emit('contest',msg);

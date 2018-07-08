@@ -156,5 +156,6 @@ http.listen(port, function(){
   redis_client.on('connect', function() {
     console.log('managementServer listening on *:' + port);
     console.log('Connected to redis server');
+    redis_client.set('active_players_count',0);
   });
 });
