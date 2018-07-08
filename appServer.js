@@ -160,6 +160,17 @@ http.listen(port, function(){
   redis_client.on('connect', function() {
     console.log('appServer listening on *:' + port);
     console.log('Connected to redis server');
+
+    redis_client.exists('is_game_on', function(err, reply){
+      if(err)
+      {
+        console.log("Error verifying key in redis cache: is_game_on")
+      }
+      else if (reply == 1)
+      {
+        is_game_on = true
+      } 
+    });
   });
 });
 
@@ -178,7 +189,10 @@ mgmt_socket_client.on('question', function(msg){
   io.emit('contest',msg);
   last_question = msg
 
-  is_game_on = true
+  if(!is_game_on)
+  {
+    is_game_on = true
+  }
 
   console.log("Begin Timeout")
   setTimeout(function () {
