@@ -29,7 +29,7 @@ var players_answer_distribution = {
   "4": "0"
 }
 
-// Get Client HTML
+// LB Health Check
 app.get('/', function(req, res){
   res.send('health check')
 });
@@ -37,29 +37,35 @@ app.get('/', function(req, res){
 // Trivia Near - Posting a new question
 app.post('/', function(req, res){
 
-  for(var player in active_players) {
-      active_players[player].answer = 0;
-      active_players[player].last_msg = null;
-  }
+  redis_client.exists('is_game_on', function(err, reply){
+    if(err)
+    {
+      console.log("Error verifying key in redis cache: is_game_on")
+    }
+    else if (reply == 1)
+    {
+      console.log('is_game_on key already exist in Redis Cache');
+    } 
+    else 
+    {
+      redis_client.set('is_game_on',1);
+    }
 
-  console.log("Active Players After Posting a question")
-  console.log(active_players)
+    redis_client.keys("player_*", function(err, keys) {
 
-  io.emit('question',req.body);
-  last_question = req.body
-  res.end();
+      for(var i=0;i<keys.length;i++){
+          console.log("Initializing Player Object: " +keys[i])
+          redis_client.hmset(keys[i], {
+              'answer': "0",
+              'last_msg': "null"
+          });
+      }
 
-  is_game_on = true
-
-  //console.log("Set Timeout")
-
-  //setTimeout(function () {
-
-  	//  console.log("Fire Timeout")
-
-      //io.emit('timeout',last_question)
-      
-  //}, 10000)
+      // Emit question
+      io.emit('question',req.body);
+      res.end();
+    })
+  });
 });
 
 app.post('/verify', function(req, res){
@@ -155,12 +161,10 @@ http.listen(port, function(){
     console.log('managementServer listening on *:' + port);
     console.log('Connected to redis server');
 
-    var cache_key = 'active_players_count'
-
-    redis_client.exists(cache_key, function(err, reply){
+    redis_client.exists('active_players_count', function(err, reply){
       if(err)
       {
-        console.log("Error verifying key in redis cache: " +cache_key)
+        console.log("Error verifying key in redis cache: active_players_count")
       }
       else if (reply == 1)
       {
