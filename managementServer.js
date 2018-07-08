@@ -143,19 +143,33 @@ io.on('connection', function(socket){
   var client_address = socket.handshake.address;
   console.log('New appServer connection from: ' +client_address);
 
+  socket.on('disconnect', function(){
+    var del_client_address = socket.handshake.address;
+    console.log("appServer disconnected: "+del_client_address)
+  });
+
 });
-
-// Active Players
-setInterval(function () {
-    active_players_count["count"]=Object.keys(active_players).length
-    io.emit('active_players_count',active_players_count)
-}, 10000)
-
 
 http.listen(port, function(){
   redis_client.on('connect', function() {
     console.log('managementServer listening on *:' + port);
     console.log('Connected to redis server');
-    redis_client.set('active_players_count',0);
+
+    var cache_key = 'active_players_count'
+
+    redis_client.exists(cache_key, function(err, reply){
+      if(err)
+      {
+        console.log("Error verifying key in redis cache: " +cache_key)
+      }
+      else if (reply == 1)
+      {
+        console.log('active_players_count key already exist in Redis Cache');
+      } 
+      else 
+      {
+        redis_client.set('active_players_count',0);
+      }
+    });
   });
 });
