@@ -217,6 +217,8 @@ io.on('connection', function(socket){
 
   socket.on('disconnect', function(){
     console.log("User disconnected")
+    console.log(socket)
+    console.log(socket.handshake.query.username)
     redis_client.decr('active_players_count');
   });
 });
