@@ -9,7 +9,7 @@ var redis = require('redis');
 
 app.use(bodyParser.json());
 var redis_client = redis.createClient(6379, '127.0.0.1');
-var socket_client = null;
+var mgmt_socket_client = null;
 
 var last_question = null;
 var is_game_on= false;
@@ -47,22 +47,26 @@ app.post('/', function(req, res){
   console.log("Active Players After Posting a question")
   console.log(active_players)
 
-  io.emit('contest',req.body);
-  last_question = req.body
-  res.end();
+
+});
+
+mgmt_socket_client.on('question', function(msg){
+
+
+  // Emit question to App
+  io.emit('contest',msg);
+  last_question = msg
 
   is_game_on = true
 
-  console.log("Set Timeout")
-
+  console.log("Begin Timeout")
   setTimeout(function () {
-
-  	  console.log("Fire Timeout")
-
+      console.log("End Timeout")
+      // Emit Timeout Signal
       io.emit('timeout',last_question)
-      
   }, 10000)
-});
+
+})
 
 app.post('/verify', function(req, res){
 
@@ -234,7 +238,7 @@ setInterval(function () {
 
 http.listen(port, function(){
   var management_server_url = "http://127.0.0.1:11000"
-  socket_client = io_client(management_server_url)
+  mgmt_socket_client = io_client(management_server_url)
   redis_client.on('connect', function() {
     console.log('appServer listening on *:' + port);
     console.log('connected to redis server');

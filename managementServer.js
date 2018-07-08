@@ -45,21 +45,21 @@ app.post('/', function(req, res){
   console.log("Active Players After Posting a question")
   console.log(active_players)
 
-  io.emit('contest',req.body);
+  io.emit('question',req.body);
   last_question = req.body
   res.end();
 
   is_game_on = true
 
-  console.log("Set Timeout")
+  //console.log("Set Timeout")
 
-  setTimeout(function () {
+  //setTimeout(function () {
 
-  	  console.log("Fire Timeout")
+  	//  console.log("Fire Timeout")
 
-      io.emit('timeout',last_question)
+      //io.emit('timeout',last_question)
       
-  }, 10000)
+  //}, 10000)
 });
 
 app.post('/verify', function(req, res){
