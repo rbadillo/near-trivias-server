@@ -219,3 +219,18 @@ mgmt_socket_client.on('question', function(msg){
       io.emit('timeout',last_question)
   }, 10000)
 })
+
+mgmt_socket_client.on('verify_answer', function(msg){
+
+  // Emit question verification to App
+  io.emit('verify_answer',msg);
+
+})
+
+mgmt_socket_client.on('end_game', function(msg){
+
+  // Emit end game to App
+  io.emit('end_game',msg);
+
+})
+
