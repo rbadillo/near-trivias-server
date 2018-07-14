@@ -75,17 +75,22 @@ app.post('/verify', function(req, res){
       console.log("Player Object: " +tmp_key)
 
       redis_client.hgetall(tmp_key, function(err, object) {
-          if(object.answer != req.answer)
-          {
 
-            console.log("Game over for: " +tmp_key)
-            redis_client.del(tmp_key, function(err, reply) {
-                if(err)
-                {
-                  console.log("Error deleting key: " +tmp_key)
-                }
-            });
-          }
+        console.log(object)
+        console.log(object.answer)
+        console.log(req.answer)
+        console.log(object.answer != req.answer)
+        if(object.answer != req.answer)
+        {
+
+          console.log("Game over for: " +tmp_key)
+          redis_client.del(tmp_key, function(err, reply) {
+              if(err)
+              {
+                console.log("Error deleting key: " +tmp_key)
+              }
+          });
+        }
       });
     }
 
