@@ -70,20 +70,23 @@ app.post('/verify', function(req, res){
   redis_client.keys("player_*", function(err, keys) {
 
     for(var i=0;i<keys.length;i++){
-      console.log("Player Object: " +keys[i])
 
-      if(keys[i].answer != req.answer)
-      {
+      var tmp_key = keys[i];
+      console.log("Player Object: " +tmp_key)
 
-        var tmp_key = keys[i];
-        console.log("Game over for: " +tmp_key)
-        redis_client.del(tmp_key, function(err, reply) {
-            if(err)
-            {
-              console.log("Error deleting key: " +tmp_key)
-            }
-        });
-      }
+      redis_client.hgetall(tmp_key, function(err, object) {
+          if(object.answer != req.answer)
+          {
+
+            console.log("Game over for: " +tmp_key)
+            redis_client.del(tmp_key, function(err, reply) {
+                if(err)
+                {
+                  console.log("Error deleting key: " +tmp_key)
+                }
+            });
+          }
+      });
     }
 
     redis_client.hgetall('players_answer_distribution', function(err, object) {
@@ -112,6 +115,9 @@ app.post('/verify', function(req, res){
       console.log(object)
 
       redis_client.keys("player_*", function(err, keys) {
+
+        console.log(keys)
+        console.log(keys.length)
 
         if(keys.length==1)
         {
