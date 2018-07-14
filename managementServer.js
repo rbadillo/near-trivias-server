@@ -124,13 +124,11 @@ app.post('/verify', function(req, res){
         {
           console.log("WE HAVE A WINNER")
 
-          var winner_player = keys[0].split("player_")[0]
+          var winner_player = keys[0]
+          winner_player = winner_player.split("player_")[1]
           var winner_msg = "Felicidades, " +winner_player +" ganaste Trivias Near!"
 
           last_question["final_message"] = winner_msg
-
-          //var winner_user = Object.keys(active_players)
-          //active_players[winner_user[0]].last_msg = winner_msg
 
           io.emit('end_game',last_question)
         }
