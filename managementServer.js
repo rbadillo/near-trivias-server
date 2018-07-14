@@ -76,11 +76,7 @@ app.post('/verify', function(req, res){
 
       redis_client.hgetall(tmp_key, function(err, object) {
 
-        console.log(object)
-        console.log(object.answer)
-        console.log(req.answer)
-        console.log(object.answer != req.answer)
-        if(object.answer != req.answer)
+        if(object.answer != last_question.answer)
         {
 
           console.log("Game over for: " +tmp_key)
