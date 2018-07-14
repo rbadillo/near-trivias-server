@@ -10,16 +10,11 @@ app.use(bodyParser.json());
 var redis_client = redis.createClient(6379, '127.0.0.1');
 
 var last_question = null;
-var is_game_on= false;
 var active_players = {};
 
 var player_object = {
   "answer": 0,
   "last_msg": null
-}
-
-var active_players_count = {
-  "count":0
 }
 
 var players_answer_distribution = {
@@ -70,6 +65,90 @@ app.post('/', function(req, res){
 
 app.post('/verify', function(req, res){
 
+  var last_question = req.body
+
+  redis_client.keys("player_*", function(err, keys) {
+
+    for(var i=0;i<keys.length;i++){
+      console.log("Initializing Player Object: " +keys[i])
+
+      if(keys[i].answer != req.answer)
+      {
+
+        var tmp_key = keys[i];
+        redis_client.del(tmp_key, function(err, reply) {
+            if(err)
+            {
+              console.log("Error deleting key: " +tmp_key)
+            }
+        });
+      }
+    }
+
+    redis_client.hgetall('players_answer_distribution', function(err, object) {
+
+      var max_length = object["1"].length;
+
+      for(var key in object){
+        if(object[key].length>max_length)
+        {
+          max_length = object[key].length
+        }
+      }
+
+      for(var key in object){
+        if(object[key].length<max_length)
+        {
+          var tmp = object[key]
+          tmp = tmp.padStart(max_length,"0")
+          object[key] = tmp
+        }
+      }
+
+      last_question["answer_distribution"] = object
+
+      redis_client.keys("player_*", function(err, keys) {
+
+        if(keys.length==1)
+        {
+          console.log("WE HAVE A WINNER")
+
+          var winner_player = keys[0].split("player_")[0]
+          var winner_msg = "Felicidades, " +winner_player +" ganaste Trivias Near!"
+
+          last_question["final_message"] = winner_msg
+
+          //var winner_user = Object.keys(active_players)
+          //active_players[winner_user[0]].last_msg = winner_msg
+
+          io.emit('end_game',last_question)
+        }
+        else if(keys.length==0)
+        {
+          console.log("WE HAVE A TIE")
+
+          last_question["final_message"] = "Lo sentimos pero tuvimos un empate"
+
+          io.emit('end_game',last_question)
+        }
+        else
+        {
+          io.emit('verify_answer',last_question)
+        }
+        
+        redis_client.hmset('players_answer_distribution', {
+            '1': 0,
+            '2': 0,
+            '3': 0,
+            '4': 0,
+        });
+
+        res.end();
+      })
+    });
+  })
+
+    /*
     for(var player in active_players)
     {
       console.log("Player: " +player +" - Player Answer: " +active_players[player].answer +" - Real Answer: " +last_question.answer)
@@ -84,7 +163,9 @@ app.post('/verify', function(req, res){
 
     console.log("players_answer_distribution")
     console.log(players_answer_distribution)
+    */
 
+    /*
     var max_length = players_answer_distribution["1"].length;
 
     for(var key in players_answer_distribution){
@@ -104,6 +185,7 @@ app.post('/verify', function(req, res){
     }
 
     last_question["answer_distribution"] = players_answer_distribution
+    */
 
     // WE HAVE A WINNER
     if(Object.keys(active_players).length == 1)
