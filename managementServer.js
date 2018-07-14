@@ -70,12 +70,13 @@ app.post('/verify', function(req, res){
   redis_client.keys("player_*", function(err, keys) {
 
     for(var i=0;i<keys.length;i++){
-      console.log("Initializing Player Object: " +keys[i])
+      console.log("Player Object: " +keys[i])
 
       if(keys[i].answer != req.answer)
       {
 
         var tmp_key = keys[i];
+        console.log("Game over for: " +tmp_key)
         redis_client.del(tmp_key, function(err, reply) {
             if(err)
             {
@@ -107,6 +108,9 @@ app.post('/verify', function(req, res){
 
       last_question["answer_distribution"] = object
 
+      console.log("answer_distribution")
+      console.log(object)
+
       redis_client.keys("player_*", function(err, keys) {
 
         if(keys.length==1)
@@ -135,7 +139,7 @@ app.post('/verify', function(req, res){
         {
           io.emit('verify_answer',last_question)
         }
-        
+
         redis_client.hmset('players_answer_distribution', {
             '1': 0,
             '2': 0,
@@ -187,6 +191,7 @@ app.post('/verify', function(req, res){
     last_question["answer_distribution"] = players_answer_distribution
     */
 
+    /*
     // WE HAVE A WINNER
     if(Object.keys(active_players).length == 1)
     {
@@ -223,6 +228,7 @@ app.post('/verify', function(req, res){
     }
 
     res.end();
+    */
 
 })
 
