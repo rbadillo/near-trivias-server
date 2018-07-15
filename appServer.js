@@ -11,25 +11,10 @@ app.use(bodyParser.json());
 var redis_client = redis.createClient(6379, '127.0.0.1');
 var mgmt_socket_client = null;
 
-var last_question = null;
 var is_game_on= false;
-var active_players = {};
 
-var player_object = {
-  "answer": 0,
-  "last_msg": null
-}
-
-var active_players_count = {
-  "count":0
-}
-
-var players_answer_distribution = {
-  "1": "0",
-  "2": "0",
-  "3": "0",
-  "4": "0"
-}
+var active_players_count_timer_interval = 10000
+var question_timeout = 7000
 
 // Get Client HTML
 app.get('/', function(req, res){
@@ -45,34 +30,8 @@ app.post('/answer', function(req, res){
   var player = req.body.player;
   var answer = req.body.answer;
 
-
-  // active_players[user].answer = answer;
-
-  //players_answer_distribution[answer] = (parseInt(players_answer_distribution[answer]) + 1).toString()
-
   redis_client.hincrby('players_answer_distribution',answer,1)
 
-  /*
-  if(active_players[user].last_msg == null)
-  {
-    var response = {
-    	msg : ""
-    }
-
-    if(answer == last_question.answer)
-    {
-    	response.msg = "CONGRATULATIONS, KEEP PLAYING"
-    	res.end(JSON.stringify(response))
-    }
-    else
-    {
-    	response.msg = "GAME OVER"
-    	res.end(JSON.stringify(response))
-    }
-
-    active_players[user].last_msg = response.msg
-  }
-  */
   var cache_key = "player_" +player
 
   redis_client.exists(cache_key, function(err, reply){
@@ -172,7 +131,7 @@ setInterval(function () {
         io.emit('active_players_count',reply)
       }
     });
-}, 10000)
+}, active_players_count_timer_interval)
 
 http.listen(port, function(){
   redis_client.on('connect', function() {
@@ -205,7 +164,7 @@ mgmt_socket_client.on('question', function(msg){
 
   // Emit question to App
   io.emit('contest',msg);
-  last_question = msg
+  var last_question = msg
 
   if(!is_game_on)
   {
@@ -217,7 +176,7 @@ mgmt_socket_client.on('question', function(msg){
       console.log("End Timeout")
       // Emit Timeout Signal
       io.emit('timeout',last_question)
-  }, 10000)
+  }, question_timeout)
 })
 
 mgmt_socket_client.on('verify_answer', function(msg){
