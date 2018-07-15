@@ -114,7 +114,7 @@ io.on('connection', function(socket){
 
   socket.on('disconnect', function(){
     
-    var del_player = socket.handshake.query.username
+    var del_player = socket.handshake.query.player
     var del_cache_key = "player_" +del_player
     redis_client.del(del_cache_key)
 
