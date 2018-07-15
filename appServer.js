@@ -101,10 +101,13 @@ io.on('connection', function(socket){
   }
 
   socket.on('disconnect', function(){
-    console.log("User disconnected")
+    
     var del_player = socket.handshake.query.username
     var del_cache_key = "player_" +del_player
     redis_client.del(del_cache_key)
+
+    console.log("User disconnected: " +del_player)
+
     redis_client.get('active_players_count', function(err, reply) {
       if(err)
       {
