@@ -58,7 +58,19 @@ io.on('connection', function(socket){
   var cache_key = "player_" +player
 
   console.log("User Connected: " +player +" - cache key: " +cache_key)
-  redis_client.incr('active_players_count');
+
+  redis_client.exists(cache_key, function(err, reply){
+    if(err)
+    {
+      console.log("Error verifying key in redis cache: " +cache_key)
+    }
+    else if (reply == 0)
+    {
+      // Increment count only if player doesn't exist in cache
+      redis_client.incr('active_players_count');
+    }
+  });
+  
 
   if(!is_game_on)
   {
