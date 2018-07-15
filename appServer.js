@@ -175,6 +175,14 @@ mgmt_socket_client.on('connect', function(){
   console.log('Connected to Management Server')
 })
 
+mgmt_socket_client.on('disconnect', function(){
+  console.log('Disconnected from Management Server')
+})
+
+mgmt_socket_client.on('reconnecting', function(attemptNumber){
+  console.log('Reconnecting to Management Server - Attempt: ' +attemptNumber)
+});
+
 mgmt_socket_client.on('question', function(msg){
 
   // Emit question to App
