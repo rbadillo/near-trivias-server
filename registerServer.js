@@ -15,7 +15,11 @@ app.get('/', function(req, res){
 // Player Login
 app.post('/login', function(req, res){
   console.log(req.body)
-  res.end("Success")
+
+  var response = {
+    "msg":"success"
+  }
+  res.json(200,response)
 });
 
 // Player Register
