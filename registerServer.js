@@ -15,7 +15,7 @@ app.get('/', function(req, res){
 // Player Login
 app.post('/login', function(req, res){
   console.log(req.body)
-  res.end()
+  res.end("Success")
 });
 
 // Player Register
