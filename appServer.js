@@ -16,7 +16,7 @@ var is_game_on= false;
 var active_players_count_timer_interval = 10000
 var question_timeout = 7000
 
-// Get Client HTML
+// LB Health Check
 app.get('/', function(req, res){
   res.send('health check')
 });
@@ -48,6 +48,7 @@ app.post('/answer', function(req, res){
               'last_msg': "null"
           });
       }
+      res.end()
   })
 });
 
