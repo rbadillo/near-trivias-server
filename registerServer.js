@@ -19,7 +19,8 @@ app.post('/login', function(req, res){
   var response = {
     "msg":"success"
   }
-  res.json(200,response)
+
+  res.status(400).json(response)
 });
 
 // Player Register
