@@ -64,6 +64,10 @@ app.post('/register', function(req, res){
 
 http.listen(port, function(){
   console.log('registerServer listening on *:' + port);
+
+  pool.on('connection', function (connection) {
+    console.log("Connected to Mysql server")
+  });
 });
 
 
