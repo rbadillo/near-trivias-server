@@ -51,6 +51,7 @@ app.post('/login', function(req, res){
     {
       console.log(results)
       response['msg']="El usuario no existe o la contraseña es incorrecta"
+      console.log(response)
       res.status(400).json(response)
     }
   });
