@@ -35,6 +35,9 @@ app.post('/login', function(req, res){
   var user_query = "Select id from users where email = ? and password = ? "
   var query_values = [player_email,player_password]
 
+  console.log("Query: ",user_query)
+  console.log("Query values: ",query_values)
+
   pool.query(user_query, query_values , function (error, results, fields) {
     if (error)
     {
