@@ -24,7 +24,6 @@ app.get('/', function(req, res){
 
 // Player Login
 app.post('/login', function(req, res){
-  console.log(req.body)
 
   var player_email = req.body.email 
   var player_password = req.body.password
@@ -33,25 +32,28 @@ app.post('/login', function(req, res){
     "msg":""
   }
 
-  var user_query = "Select id from users where email = ? and password = ?"
+  var user_query = "Select id from users where email = ? and password = ? "
   var query_values = [player_email,player_password]
 
   pool.query(user_query, query_values , function (error, results, fields) {
     if (error)
     {
-      response['msg']="Hubo un error en el servidor, Porfavor intenta de nuevo"
+      console.log(error)
+      response['msg']="Hubo un error en el servidor, por favor intenta de nuevo"
       res.status(500).json(response)
     }
-
-    console.log(results)
-    console.log(results.length)
-    console.log(fields)
-
-    response['msg']="Bienvenido a Trivias Near"
-    res.status(200).json(response)
-
+    else if(results.length == 1)
+    {
+      response['msg']="Bienvenido a Trivias Near"
+      res.status(200).json(response)
+    }
+    else
+    {
+      console.log(results)
+      response['msg']="El usuario no existe o la contraseña es incorrecta"
+      res.status(400).json(response)
+    }
   });
-
 });
 
 // Player Register
@@ -64,10 +66,6 @@ app.post('/register', function(req, res){
 
 http.listen(port, function(){
   console.log('registerServer listening on *:' + port);
-
-  pool.on('connection', function (connection) {
-    console.log("Connected to Mysql server")
-  });
 });
 
 
