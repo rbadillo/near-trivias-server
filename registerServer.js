@@ -197,17 +197,10 @@ app.post('/register', function(req, res){
       response['msg']="Hubo un error en el servidor, por favor intenta de nuevo"
       res.status(500).json(response)
     }
-    else if(results.length == 1)
+    else
     {
       response['msg']="Tu cuenta ha sido creada exitosamente.\nPor favor confirma tu cuenta\ndando click en el link enviado\na tu correo electrónico"
       res.status(200).json(response)
-    }
-    else
-    {
-      console.log(results)
-      response['msg']="Hubo un error en el servidor, por favor intenta de nuevo"
-      console.log(response)
-      res.status(400).json(response)
     }
   });
 });
