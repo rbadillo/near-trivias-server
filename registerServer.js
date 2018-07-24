@@ -29,21 +29,17 @@ app.get('/countries', function(req, res){
     if (error)
     {
       console.log(error)
-      response['msg']="Hubo un error en el servidor obteniendo la lista de paises, por favor intenta de nuevo"
-      res.status(500).json(response)
+      res.status(500).end()
     }
     else if(results.length)
     {
       console.log(results)
-      response['msg']="Bienvenido a Trivias Near"
-      res.status(200).json(response)
+      res.status(200).end()
     }
     else
     {
       console.log(results)
-      response['msg']="El usuario no existe o la contraseña es incorrecta"
-      console.log(response)
-      res.status(400).json(response)
+      res.status(400).end()
     }
   });
 });
