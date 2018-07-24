@@ -50,6 +50,44 @@ app.get('/countries', function(req, res){
   });
 });
 
+app.get('/states', function(req, res){
+
+  var country = req.query.country
+  var user_query = ""
+
+  if(country=="México")
+  {
+    user_query = "Select state_name from mx_states"
+  }
+  else if(country=="USA")
+  {
+    user_query = "Select state_name from us_states"
+  }
+
+  var response = {
+    "msg":""
+  }
+
+  pool.query(user_query, function (error, results, fields) {
+    if (error)
+    {
+      console.log(error)
+      response['msg']="Hubo un error en el servidor, por favor intenta de nuevo"
+      res.status(500).json(response)
+    }
+    else if(results.length)
+    {
+      res.status(200).json(results)
+    }
+    else
+    {
+      console.log(results)
+      response['msg']="Hubo un error en el servidor, por favor intenta de nuevo"
+      res.status(400).json(response)
+    }
+  });
+});
+
 // Player Login
 app.post('/login', function(req, res){
 
