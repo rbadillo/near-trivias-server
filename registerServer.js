@@ -139,7 +139,7 @@ app.post('/login', function(req, res){
     "msg":""
   }
 
-  var user_query = "Select id from users where email = ? and password = ? "
+  var user_query = "Select id from users where email = ? and password = ? and is_enabled=1"
   var query_values = [player_email,player_password]
 
   console.log("Query: ",user_query)
@@ -160,7 +160,7 @@ app.post('/login', function(req, res){
     else
     {
       console.log(results)
-      response['msg']="El usuario no existe o la contraseña es incorrecta"
+      response['msg']="El usuario no existe,la contraseña es incorrecta\no la cuenta no ha sido verificada"
       console.log(response)
       res.status(400).json(response)
     }
