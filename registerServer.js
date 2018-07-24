@@ -169,8 +169,7 @@ app.post('/login', function(req, res){
 
 // Player Register
 app.post('/register', function(req, res){
-  console.log(req.body)
-  console.log(sha256("Hello"))
+
   var name=req.body.name
   var lastname=req.body.lastname
   var age=req.body.age
@@ -179,16 +178,14 @@ app.post('/register', function(req, res){
   var state=req.body.state
   var city=req.body.city
   var password=req.body.password
+  console.log(req.body)
 
   var response = {
     "msg":""
   }
 
-  var user_query = "Insert into users (name,last_name,age,email,password,country,state,city) VALUES (?,?,?,?,?,?,?,?) "
-  var query_values = [name,lastname,age,email,password,country,state,city]
-
-  console.log("Query: ",user_query)
-  console.log("Query values: ",query_values)
+  var user_query = "Select email from users where email=?"
+  var query_values = [email]
 
   pool.query(user_query, query_values , function (error, results, fields) {
     if (error)
@@ -197,10 +194,32 @@ app.post('/register', function(req, res){
       response['msg']="Hubo un error en el servidor, por favor intenta de nuevo"
       res.status(500).json(response)
     }
+    else if(results.length==1)
+    {
+      response['msg']="Lo sentimos pero un usuario con ese correo electrónico ya fue registrado"
+      res.status(400).json(response)
+    }
     else
     {
-      response['msg']="Tu cuenta ha sido creada exitosamente.\nPor favor confirma tu cuenta\ndando click en el link enviado\na tu correo electrónico"
-      res.status(200).json(response)
+      var user_query = "Insert into users (name,last_name,age,email,password,country,state,city) VALUES (?,?,?,?,?,?,?,?)"
+      var query_values = [name,lastname,age,email,password,country,state,city]
+
+      console.log("Query: ",user_query)
+      console.log("Query values: ",query_values)
+
+      pool.query(user_query, query_values , function (error, results, fields) {
+        if (error)
+        {
+          console.log(error)
+          response['msg']="Hubo un error en el servidor, por favor intenta de nuevo"
+          res.status(500).json(response)
+        }
+        else
+        {
+          response['msg']="Tu cuenta ha sido creada exitosamente.\nPor favor confirma tu cuenta\ndando click en el link enviado\na tu correo electrónico"
+          res.status(200).json(response)
+        }
+      });
     }
   });
 });
