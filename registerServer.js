@@ -88,6 +88,47 @@ app.get('/states', function(req, res){
   });
 });
 
+app.get('/cities', function(req, res){
+
+  var country = req.query.country
+  var state = req.query.state
+  var user_query = ""
+
+  if(country=="Mexico")
+  {
+    user_query = "Select mxc.city from mx_cities mxc, mx_states mxs WHERE mxc.id_state = mxs.id AND mxs.state_name=? order by mxc.city"
+  }
+  else if(country=="USA")
+  {
+    user_query = "Select usc.city from us_cities usc, us_states uss WHERE usc.id_state = uss.id AND uss.state_name=? order by usc.city"
+  }
+
+  var query_values = [state]
+
+  var response = {
+    "msg":""
+  }
+
+  pool.query(user_query, query_values, function (error, results, fields) {
+    if (error)
+    {
+      console.log(error)
+      response['msg']="Hubo un error en el servidor, por favor intenta de nuevo"
+      res.status(500).json(response)
+    }
+    else if(results.length)
+    {
+      res.status(200).json(results)
+    }
+    else
+    {
+      console.log(results)
+      response['msg']="Hubo un error en el servidor, por favor intenta de nuevo"
+      res.status(400).json(response)
+    }
+  });
+});
+
 // Player Login
 app.post('/login', function(req, res){
 
