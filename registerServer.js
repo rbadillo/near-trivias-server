@@ -149,7 +149,7 @@ app.post('/login', function(req, res){
     if (error)
     {
       console.log(error)
-      response['msg']="Hubo un error en el servidor, por favor intenta de nuevo"
+      response['msg']="Hubo un error en el servidor, por favor intenta de nuevo."
       res.status(500).json(response)
     }
     else if(results.length == 1)
@@ -160,7 +160,7 @@ app.post('/login', function(req, res){
     else
     {
       console.log(results)
-      response['msg']="El usuario no existe,la contraseña es incorrecta\no la cuenta no ha sido verificada"
+      response['msg']="El usuario no existe, la contraseña es incorrecta\no la cuenta no ha sido verificada."
       console.log(response)
       res.status(400).json(response)
     }
