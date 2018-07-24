@@ -171,7 +171,45 @@ app.post('/login', function(req, res){
 app.post('/register', function(req, res){
   console.log(req.body)
   console.log(sha256("Hello"))
-  res.end()
+  var name=req.body.name
+  var lastname=req.body.lastname
+  var age=req.body.age
+  var email=req.body.email
+  var country=req.body.country
+  var state=req.body.state
+  var city=req.body.city
+  var password=req.body.password
+
+  var response = {
+    "msg":""
+  }
+
+  var user_query = "Insert into users (name,last_name,age,email,password,country,state,city) VALUES (?,?,?,?,?,?,?,?) "
+  var query_values = [name,lastname,age,email,password,country,state,city]
+
+  console.log("Query: ",user_query)
+  console.log("Query values: ",query_values)
+
+  pool.query(user_query, query_values , function (error, results, fields) {
+    if (error)
+    {
+      console.log(error)
+      response['msg']="Hubo un error en el servidor, por favor intenta de nuevo"
+      res.status(500).json(response)
+    }
+    else if(results.length == 1)
+    {
+      response['msg']="Tu cuenta ha sido creada exitosamente.\nPor favor confirma tu cuenta\ndando click en el link enviado\na tu correo electrónico"
+      res.status(200).json(response)
+    }
+    else
+    {
+      console.log(results)
+      response['msg']="Hubo un error en el servidor, por favor intenta de nuevo"
+      console.log(response)
+      res.status(400).json(response)
+    }
+  });
 });
 
 
