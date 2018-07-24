@@ -39,7 +39,6 @@ app.get('/countries', function(req, res){
     }
     else if(results.length)
     {
-      console.log(results)
       res.status(200).json(results)
     }
     else
