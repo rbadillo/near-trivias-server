@@ -8,7 +8,7 @@ var mysql = require('mysql');
 
 // Mysql
 var pool  = mysql.createPool({
-  connectionLimit : 10,
+  connectionLimit : 100,
   host            : '127.0.0.1',
   user            : 'root',
   password        : 'EstaTrivialDb!',
@@ -20,6 +20,32 @@ app.use(bodyParser.json());
 // LB Health Check
 app.get('/', function(req, res){
   res.send('health check')
+});
+
+app.get('/countries', function(req, res){
+  var user_query = "Select country_name from global_countries"
+
+  pool.query(user_query, function (error, results, fields) {
+    if (error)
+    {
+      console.log(error)
+      response['msg']="Hubo un error en el servidor obteniendo la lista de paises, por favor intenta de nuevo"
+      res.status(500).json(response)
+    }
+    else if(results.length)
+    {
+      console.log(results)
+      response['msg']="Bienvenido a Trivias Near"
+      res.status(200).json(response)
+    }
+    else
+    {
+      console.log(results)
+      response['msg']="El usuario no existe o la contraseña es incorrecta"
+      console.log(response)
+      res.status(400).json(response)
+    }
+  });
 });
 
 // Player Login
