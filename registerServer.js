@@ -96,11 +96,11 @@ app.get('/cities', function(req, res){
 
   if(country=="Mexico")
   {
-    user_query = "Select mxc.city from mx_cities mxc, mx_states mxs WHERE mxc.id_state = mxs.id AND mxs.state_name=? order by mxc.city"
+    user_query = "Select mxc.city_name from mx_cities mxc, mx_states mxs WHERE mxc.id_state = mxs.id AND mxs.state_name=? order by mxc.city_name"
   }
   else if(country=="USA")
   {
-    user_query = "Select usc.city from us_cities usc, us_states uss WHERE usc.id_state = uss.id AND uss.state_name=? order by usc.city"
+    user_query = "Select usc.city_name from us_cities usc, us_states uss WHERE usc.id_state = uss.id AND uss.state_name=? order by usc.city_name"
   }
 
   var query_values = [state]
