@@ -196,7 +196,7 @@ app.post('/register', function(req, res){
     }
     else if(results.length==1)
     {
-      response['msg']="Lo sentimos pero un usuario con ese correo electrónico ya fue registrado"
+      response['msg']="Lo sentimos pero un usuario con ese\ncorreo electrónico ya fue registrado"
       res.status(400).json(response)
     }
     else
