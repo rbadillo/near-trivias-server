@@ -23,23 +23,30 @@ app.get('/', function(req, res){
 });
 
 app.get('/countries', function(req, res){
+
+  var response = {
+    "msg":""
+  }
+
   var user_query = "Select country_name from global_countries"
 
   pool.query(user_query, function (error, results, fields) {
     if (error)
     {
       console.log(error)
-      res.status(500).end()
+      response['msg']="Hubo un error en el servidor, por favor intenta de nuevo"
+      res.status(500).json(response)
     }
     else if(results.length)
     {
       console.log(results)
-      res.status(200).end()
+      res.status(200).json(results)
     }
     else
     {
       console.log(results)
-      res.status(400).end()
+      response['msg']="Hubo un error en el servidor, por favor intenta de nuevo"
+      res.status(400).json(response)
     }
   });
 });
