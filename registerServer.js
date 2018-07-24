@@ -55,7 +55,7 @@ app.get('/states', function(req, res){
   var country = req.query.country
   var user_query = ""
 
-  if(country=="México")
+  if(country=="Mexico")
   {
     user_query = "Select state_name from mx_states"
   }
