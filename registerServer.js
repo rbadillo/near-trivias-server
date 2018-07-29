@@ -5,10 +5,16 @@ var port = process.env.PORT || 12000;
 var bodyParser = require('body-parser')
 var sha256 = require('js-sha256');
 var mysql = require('mysql');
+var uuid=require('uuid')
+var nodemailer = require('nodemailer');
+var fs = require('fs');
+
+// Global variables
+var html_template = ""
 
 // Mysql
 var pool  = mysql.createPool({
-  connectionLimit : 100,
+  connectionLimit : 50,
   host            : '127.0.0.1',
   user            : 'root',
   password        : 'EstaTrivialDb!',
@@ -178,6 +184,7 @@ app.post('/register', function(req, res){
   var state=req.body.state
   var city=req.body.city
   var password=req.body.password
+  var register_uuid= uuid.v1()
   console.log(req.body)
 
   var response = {
@@ -201,8 +208,8 @@ app.post('/register', function(req, res){
     }
     else
     {
-      var user_query = "Insert into users (name,last_name,age,email,password,country,state,city) VALUES (?,?,?,?,?,?,?,?)"
-      var query_values = [name,lastname,age,email,password,country,state,city]
+      var user_query = "Insert into users (name,last_name,age,email,password,country,state,city,register_uuid) VALUES (?,?,?,?,?,?,?,?,?)"
+      var query_values = [name,lastname,age,email,password,country,state,city,register_uuid]
 
       console.log("Query: ",user_query)
       console.log("Query values: ",query_values)
@@ -226,7 +233,32 @@ app.post('/register', function(req, res){
 
 
 http.listen(port, function(){
-  console.log('registerServer listening on *:' + port);
+  
+  html_template = fs.readFileSync("./email_template.html","utf8").toString();
+
+  var transporter = nodemailer.createTransport({
+    host: 'divox.com.mx',
+    port: 587,
+    secure: false, // true for 465, false for other ports
+     auth: {
+            user: 'no-reply@descubrenear.com',
+            pass: 'EstaTrivialMail!'
+        }
+  });
+
+  // verify connection configuration
+  transporter.verify(function(error, success) {
+     if (error)
+     {
+        console.log(error);
+        process.exit(1);
+     }
+     else 
+     {
+        console.log('registerServer listening on *:' + port);
+        console.log('Email Server is ready to take our messages');
+     }
+  });
 });
 
 
