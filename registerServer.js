@@ -223,8 +223,30 @@ app.post('/register', function(req, res){
         }
         else
         {
-          response['msg']="Tu cuenta ha sido creada exitosamente.\nPor favor confirma tu cuenta\ndando click en el link enviado\na tu correo electrónico"
-          res.status(200).json(response)
+
+          var mailOptions = {
+            from: 'no-reply@descubrenear.com', // sender address
+            to: email, // list of receivers
+            subject: 'Bienvenido a Trivias Near', // Subject line
+            html: html_template
+          }
+
+          transporter.sendMail(mailOptions, function (error, info) {
+             if(error)
+             {
+                console.log(error)
+                response['msg']="Hubo un error en el servidor, por favor intenta de nuevo"
+                res.status(500).json(response)
+             }
+             else
+             {
+                console.log(info);
+                response['msg']="Tu cuenta ha sido creada exitosamente.\nPor favor confirma tu cuenta\ndando click en el link enviado\na tu correo electrónico.\n\nSi el correo no se encuentra en tu bandeja\nde entrada,revisa el correo no deseado."
+                res.status(200).json(response)
+             }
+          });
+
+
         }
       });
     }
@@ -233,7 +255,7 @@ app.post('/register', function(req, res){
 
 
 http.listen(port, function(){
-  
+
   html_template = fs.readFileSync("./email_template.html","utf8").toString();
 
   var transporter = nodemailer.createTransport({
@@ -246,17 +268,18 @@ http.listen(port, function(){
         }
   });
 
-  // verify connection configuration
+  // Verify email server connection configuration
   transporter.verify(function(error, success) {
      if (error)
      {
+        console.log("Error connecting to email server")
         console.log(error);
         process.exit(1);
      }
      else 
      {
         console.log('registerServer listening on *:' + port);
-        console.log('Email Server is ready to take our messages');
+        console.log('Email server is ready to take our messages');
      }
   });
 });
