@@ -136,6 +136,65 @@ app.get('/cities', function(req, res){
   });
 });
 
+app.get('/activate', function(req,res){
+
+  var player_uuid = req.query.uuid
+
+  var response = {
+    "msg":""
+  }
+
+  if(player_uuid==null || player_uuid == "")
+  {
+    response['msg']="El link no es válido, por favor intenta de nuevo."
+    res.status(400).json(response)
+  }
+  else
+  {
+
+    var user_query = "Select id from users where register_uuid=? and is_enabled=0"
+    var query_values = [player_uuid]
+
+    //console.log("Query: ",user_query)
+    //console.log("Query values: ",query_values)
+
+    pool.query(user_query, query_values , function (error, results, fields) {
+      if (error)
+      {
+        console.log(error)
+        response['msg']="Hubo un error en el servidor, por favor intenta de nuevo."
+        res.status(500).json(response)
+      }
+      else if(results.length == 1)
+      {
+
+        var user_query = "Update users set is_enabled=1,register_uuid=NULL where id=?"
+        var query_values = [results[0].id]
+        pool.query(user_query, query_values , function (error, results, fields) {
+          if (error)
+          {
+            console.log(error)
+            response['msg']="Hubo un error en el servidor, por favor intenta de nuevo."
+            res.status(500).json(response)
+          }
+          else
+          {
+            response['msg']="Bienvenido a Trivias Near"
+            res.status(200).json(response)
+          }
+        })
+      }
+      else
+      {
+        console.log(results)
+        response['msg']="El link no es válido, por favor intenta de nuevo."
+        console.log(response)
+        res.status(400).json(response)
+      }
+    });
+  }
+})
+
 // Player Login
 app.post('/login', function(req, res){
 
@@ -149,8 +208,8 @@ app.post('/login', function(req, res){
   var user_query = "Select id from users where email = ? and password = ? and is_enabled=1"
   var query_values = [player_email,player_password]
 
-  console.log("Query: ",user_query)
-  console.log("Query values: ",query_values)
+  //console.log("Query: ",user_query)
+  //console.log("Query values: ",query_values)
 
   pool.query(user_query, query_values , function (error, results, fields) {
     if (error)
@@ -167,7 +226,7 @@ app.post('/login', function(req, res){
     else
     {
       console.log(results)
-      response['msg']="El usuario no existe, la contraseña es incorrecta\no la cuenta no ha sido verificada."
+      response['msg']="El usuario no existe, la contraseña es incorrecta\no la cuenta no ha sido activada."
       console.log(response)
       res.status(400).json(response)
     }
@@ -212,8 +271,8 @@ app.post('/register', function(req, res){
       var user_query = "Insert into users (name,last_name,age,email,password,country,state,city,register_uuid) VALUES (?,?,?,?,?,?,?,?,?)"
       var query_values = [name,lastname,age,email,password,country,state,city,register_uuid]
 
-      console.log("Query: ",user_query)
-      console.log("Query values: ",query_values)
+      //console.log("Query: ",user_query)
+      //console.log("Query values: ",query_values)
 
       pool.query(user_query, query_values , function (error, results, fields) {
         if (error)
@@ -224,6 +283,9 @@ app.post('/register', function(req, res){
         }
         else
         {
+
+          var player_link_activation = "http://register-trivias.descubrenear.com?uuid=" +register_uuid
+          html_template = html_template.replace("<USER_LINK>", player_link_activation)
 
           var mailOptions = {
             from: 'no-reply@descubrenear.com', // sender address
@@ -241,13 +303,11 @@ app.post('/register', function(req, res){
              }
              else
              {
-                console.log(info);
-                response['msg']="Tu cuenta ha sido creada exitosamente.\nPor favor confirma tu cuenta\ndando click en el link enviado\na tu correo electrónico.\n\nSi el correo no se encuentra en tu bandeja\nde entrada,revisa el correo no deseado."
+                //console.log(info);
+                response['msg']="Tu cuenta ha sido creada exitosamente.\nPor favor activa tu cuenta\ndando click en el link enviado\na tu correo electrónico.\n\nSi el correo no se encuentra en tu bandeja\nde entrada,revisa el correo no deseado."
                 res.status(200).json(response)
              }
           });
-
-
         }
       });
     }
