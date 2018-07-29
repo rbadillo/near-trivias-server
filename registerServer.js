@@ -11,6 +11,7 @@ var fs = require('fs');
 
 // Global variables
 var html_template = ""
+var email_transporter = null
 
 // Mysql
 var pool  = mysql.createPool({
@@ -231,7 +232,7 @@ app.post('/register', function(req, res){
             html: html_template
           }
 
-          transporter.sendMail(mailOptions, function (error, info) {
+          email_transporter.sendMail(mailOptions, function (error, info) {
              if(error)
              {
                 console.log(error)
@@ -258,7 +259,7 @@ http.listen(port, function(){
 
   html_template = fs.readFileSync("./email_template.html","utf8").toString();
 
-  var transporter = nodemailer.createTransport({
+  var email_transporter = nodemailer.createTransport({
     host: 'divox.com.mx',
     port: 587,
     secure: false, // true for 465, false for other ports
@@ -269,7 +270,7 @@ http.listen(port, function(){
   });
 
   // Verify email server connection configuration
-  transporter.verify(function(error, success) {
+  email_transporter.verify(function(error, success) {
      if (error)
      {
         console.log("Error connecting to email server")
