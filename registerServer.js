@@ -259,7 +259,7 @@ http.listen(port, function(){
 
   html_template = fs.readFileSync("./email_template.html","utf8").toString();
 
-  var email_transporter = nodemailer.createTransport({
+  email_transporter = nodemailer.createTransport({
     host: 'divox.com.mx',
     port: 587,
     secure: false, // true for 465, false for other ports
