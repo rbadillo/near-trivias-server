@@ -142,17 +142,13 @@ app.get('/activate', function(req,res){
 
   var player_uuid = req.query.uuid
 
-  var response = {
-    "msg":""
-  }
-
   if(player_uuid==null || player_uuid == "")
   {
+    console.log("player_uuid is null or empty")
     res.sendFile(path.join(__dirname+'/public/error.html'));
   }
   else
   {
-
     var user_query = "Select id from users where register_uuid=? and is_enabled=0"
     var query_values = [player_uuid]
 
@@ -162,9 +158,9 @@ app.get('/activate', function(req,res){
     pool.query(user_query, query_values , function (error, results, fields) {
       if (error)
       {
+        console.log("Error searching for user")
         console.log(error)
-        response['msg']="Hubo un error en el servidor, por favor intenta de nuevo."
-        res.status(500).json(response)
+        res.sendFile(path.join(__dirname+'/public/error.html'));
       }
       else if(results.length == 1)
       {
@@ -174,23 +170,21 @@ app.get('/activate', function(req,res){
         pool.query(user_query, query_values , function (error, results, fields) {
           if (error)
           {
+            console.log("Error activating user account")
             console.log(error)
-            response['msg']="Hubo un error en el servidor, por favor intenta de nuevo."
-            res.status(500).json(response)
+            res.sendFile(path.join(__dirname+'/public/error.html'));
           }
           else
           {
-            response['msg']="Bienvenido a Trivias Near"
-            res.status(200).json(response)
+            res.sendFile(path.join(__dirname+'/public/registration_complete.html'));
           }
         })
       }
       else
       {
+        console.log("registration_uuid not found")
         console.log(results)
-        response['msg']="El link no es válido, por favor intenta de nuevo."
-        console.log(response)
-        res.status(400).json(response)
+        res.sendFile(path.join(__dirname+'/public/error.html'));
       }
     });
   }
