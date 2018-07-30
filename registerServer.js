@@ -8,6 +8,7 @@ var mysql = require('mysql');
 var uuid=require('uuid')
 var nodemailer = require('nodemailer');
 var fs = require('fs');
+var path = require('path');
 
 // Global variables
 var html_template = ""
@@ -22,6 +23,7 @@ var pool  = mysql.createPool({
   database        : 'trivias_near'
 });
 
+// JSON parser
 app.use(bodyParser.json());
 
 // LB Health Check
@@ -146,8 +148,7 @@ app.get('/activate', function(req,res){
 
   if(player_uuid==null || player_uuid == "")
   {
-    response['msg']="El link no es válido, por favor intenta de nuevo."
-    res.status(400).json(response)
+    res.sendFile(path.join(__dirname+'/public/error.html'));
   }
   else
   {
