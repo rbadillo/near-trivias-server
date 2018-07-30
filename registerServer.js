@@ -165,7 +165,7 @@ app.get('/activate', function(req,res){
       else if(results.length == 1)
       {
 
-        var user_query = "Update users set is_enabled=1,register_uuid=NULL where id=?"
+        var user_query = "Update users set is_enabled=1 where id=?"
         var query_values = [results[0].id]
         pool.query(user_query, query_values , function (error, results, fields) {
           if (error)
@@ -182,10 +182,32 @@ app.get('/activate', function(req,res){
       }
       else
       {
-        console.log("registration_uuid not found")
-        console.log(results)
-        res.sendFile(path.join(__dirname+'/public/error.html'));
-      }
+          var user_query = "Select id from users where register_uuid=? and is_enabled=1"
+          var query_values = [player_uuid]
+
+          //console.log("Query: ",user_query)
+          //console.log("Query values: ",query_values)
+
+          pool.query(user_query, query_values , function (error, results, fields) {
+            if (error)
+            {
+              console.log("Error searching for user")
+              console.log(error)
+              res.sendFile(path.join(__dirname+'/public/error.html'));
+            }
+            else if(results.length == 1)
+            {
+              res.sendFile(path.join(__dirname+'/public/registration_complete.html'));
+            }
+            else
+            {
+
+              console.log("registration_uuid not found")
+              console.log(results)
+              res.sendFile(path.join(__dirname+'/public/error.html'));
+            }
+          })
+        }
     });
   }
 })
@@ -299,7 +321,7 @@ app.post('/register', function(req, res){
              else
              {
                 //console.log(info);
-                response['msg']="Tu cuenta ha sido creada exitosamente.\nPor favor activa tu cuenta\ndando click en el link enviado\na tu correo electrónico.\n\nSi el correo no se encuentra en tu bandeja\nde entrada,revisa el correo no deseado."
+                response['msg']="Tu cuenta ha sido creada exitosamente.\nPor favor activa tu cuenta\ndando click en el link enviado\na tu correo electrónico.\n\nSi el correo no se encuentra en tu bandeja\nde entrada, revisa el correo no deseado."
                 res.status(200).json(response)
              }
           });
