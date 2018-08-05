@@ -30,6 +30,10 @@ app.post('/answer', function(req, res){
   var player = req.body.player;
   var answer = req.body.answer;
 
+  var response = {
+    "msg":""
+  }
+
   redis_client.hincrby('players_answer_distribution',answer,1)
 
   var cache_key = "player_" +player
@@ -38,6 +42,8 @@ app.post('/answer', function(req, res){
       if(err)
       {
         console.log("Error verifying key in redis cache: " +cache_key)
+        response['msg']="Hubo un error en el servidor, por favor intenta de nuevo"
+        res.status(500).json(response)
       }
       else if (reply == 1)
       {
@@ -47,8 +53,15 @@ app.post('/answer', function(req, res){
               'answer': answer,
               'last_msg': "null"
           });
+
+          response['msg']="Success"
+          res.status(200).json(response)
       }
-      res.end()
+      else
+      {
+        response['msg']="Usuario inválido"
+        res.status(400).json(response)
+      }
   })
 });
 
