@@ -279,6 +279,7 @@ app.post('/forgotpassword', function(req, res){
         var player_link_activation = "http://register-trivias.descubrenear.com/resetpassword?uuid=" +register_uuid
         html_template = html_template.replace("<USER_MSG>", "Gracias por registrarte en Trivias Near, da click en el link para cambiar tu contraseña.")
         html_template = html_template.replace("<USER_LINK>", player_link_activation)
+        html_template = html_template.replace("<USER_BUTTON_MSG>", "Cambiar Contraseña")
 
         var mailOptions = {
           from: 'no-reply@descubrenear.com', // sender address
@@ -367,6 +368,7 @@ app.post('/register', function(req, res){
           var player_link_activation = "http://register-trivias.descubrenear.com/activate?uuid=" +register_uuid
           html_template = html_template.replace("<USER_MSG>", "Gracias por registrarte en Trivias Near, da click en el link para activar tu cuenta.")
           html_template = html_template.replace("<USER_LINK>", player_link_activation)
+          html_template = html_template.replace("<USER_BUTTON_MSG>", "Activar Cuenta")
 
           var mailOptions = {
             from: 'no-reply@descubrenear.com', // sender address
