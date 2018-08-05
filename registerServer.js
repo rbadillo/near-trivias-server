@@ -316,7 +316,7 @@ app.post('/forgotpassword', function(req, res){
 
 app.get('/resetpassword', function(req,res){
 
-  res.sendFile(path.join(__dirname+'/public/error.html'));
+  res.sendFile(path.join(__dirname+'/public/reset_password.html'));
 
 })
 
