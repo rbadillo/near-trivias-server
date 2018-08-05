@@ -320,6 +320,14 @@ app.get('/resetpassword', function(req,res){
 
 })
 
+app.post('/resetpassword', function(req,res){
+
+  var player_uuid = req.query.uuid
+
+  
+
+})
+
 // Player Register
 app.post('/register', function(req, res){
 
