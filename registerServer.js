@@ -296,7 +296,7 @@ app.post('/forgotpassword', function(req, res){
            else
            {
               //console.log(info);
-              response['msg']="Tu cuenta ha sido validada exitosamente.\nPara cambiar tu contraseña da\n click en el link\n enviado a tu correo electrónico.\n\nSi el correo no se encuentra en tu bandeja\nde entrada, revisa el correo no deseado."
+              response['msg']="Tu cuenta ha sido validada exitosamente.\nPara cambiar tu contraseña da click en el link\n enviado a tu correo electrónico.\n\nSi el correo no se encuentra en tu bandeja\nde entrada, revisa el correo no deseado."
               res.status(200).json(response)
            }
         });
