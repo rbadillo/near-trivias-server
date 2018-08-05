@@ -367,7 +367,7 @@ app.post('/resetpassword', function(req,res){
           }
           else
           {
-            response['msg']="Tu contraseña ha sido actualizada exitosamente"
+            response['msg']="Tu contraseña ha sido actualizada exitosamente.\n\nRegresa al App para seguir concursando."
             res.status(200).json(response)
           }
         })
