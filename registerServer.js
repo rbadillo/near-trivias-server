@@ -324,7 +324,9 @@ app.post('/resetpassword', function(req,res){
 
   var player_uuid = req.query.uuid
 
-  
+  console.log(player_uuid)
+
+  res.end()
 
 })
 
