@@ -323,11 +323,62 @@ app.get('/resetpassword', function(req,res){
 app.post('/resetpassword', function(req,res){
 
   var player_uuid = req.query.uuid
+  var password=req.body.password
 
-  console.log(player_uuid)
+  var response = {
+    "msg":""
+  }
 
-  res.end()
+  if(player_uuid==null || player_uuid == "")
+  {
+    console.log("player_uuid is null or empty")
+    response['msg']="El link utilizado para cambiar la contraseña es inválido"
+    res.status(400).json(response)
+  }
+  else
+  {
+    var user_query = "Select id,email from users where register_uuid=?"
+    var query_values = [player_uuid]
 
+    //console.log("Query: ",user_query)
+    //console.log("Query values: ",query_values)
+
+    pool.query(user_query, query_values , function (error, results, fields) {
+      if (error)
+      {
+        console.log("Error searching for user")
+        console.log(error)
+        response['msg']="Hubo un error en el servidor, por favor intenta de nuevo"
+        res.status(500).json(response)
+      }
+      else if(results.length == 1)
+      {
+
+        var user_query = "Update users set password=? where id=? and email=?"
+        var query_values = [password,results[0].id,results[0].email]
+
+        pool.query(user_query, query_values , function (error, results, fields) {
+          if (error)
+          {
+            console.log("Error updating user password")
+            console.log(error)
+            response['msg']="Hubo un error en el servidor, por favor intenta de nuevo"
+            res.status(500).json(response)
+          }
+          else
+          {
+            response['msg']="Tu contraseña ha sido actualizada exitosamente"
+            res.status(200).json(response)
+          }
+        })
+      }
+      else
+      {
+        response['msg']="El link utilizado para cambiar la contraseña es inválido"
+        res.status(400).json(response)
+      }
+    });
+  }
 })
 
 // Player Register
