@@ -354,8 +354,9 @@ app.post('/resetpassword', function(req,res){
       else if(results.length == 1)
       {
 
-        var user_query = "Update users set password=? where id=? and email=?"
-        var query_values = [password,results[0].id,results[0].email]
+        var user_query = "Update users set password=?, register_uuid=? where id=? and email=?"
+        var new_register_uuid = uuid.v1()
+        var query_values = [password,new_register_uuid, results[0].id,results[0].email]
 
         pool.query(user_query, query_values , function (error, results, fields) {
           if (error)
