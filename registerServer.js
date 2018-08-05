@@ -250,6 +250,68 @@ app.post('/login', function(req, res){
   });
 });
 
+// Player Forgot Password
+app.post('/forgotpassword', function(req, res){
+
+  var player_email = req.body.email 
+
+  var response = {
+    "msg":""
+  }
+
+  var user_query = "Select id,register_uuid from users where email = ?"
+  var query_values = [player_email]
+
+  //console.log("Query: ",user_query)
+  //console.log("Query values: ",query_values)
+
+  pool.query(user_query, query_values , function (error, results, fields) {
+    if (error)
+    {
+      console.log(error)
+      response['msg']="Hubo un error en el servidor, por favor intenta de nuevo."
+      res.status(500).json(response)
+    }
+    else if(results.length == 1)
+    {
+
+        var register_uuid = results[0].register_uuid
+        var player_link_activation = "http://register-trivias.descubrenear.com/resetpassword?uuid=" +register_uuid
+        html_template = html_template.replace("<USER_LINK>", player_link_activation)
+
+        var mailOptions = {
+          from: 'no-reply@descubrenear.com', // sender address
+          to: player_email, // list of receivers
+          subject: 'Cambio de contraseña - Trivias Near', // Subject line
+          html: html_template
+        }
+
+        email_transporter.sendMail(mailOptions, function (error, info) {
+           if(error)
+           {
+              console.log(error)
+              response['msg']="Hubo un error en el servidor, por favor intenta de nuevo"
+              res.status(500).json(response)
+           }
+           else
+           {
+              //console.log(info);
+              response['msg']="Tu cuenta ha sido validada exitosamente.\nPara cambiar tu contraseña\da click en el link enviado\na tu correo electrónico.\n\nSi el correo no se encuentra en tu bandeja\nde entrada, revisa el correo no deseado."
+              res.status(200).json(response)
+           }
+        });
+
+    }
+    else
+    {
+      console.log(results)
+      response['msg']="El usuario no existe, verifica la dirección\nde correo electrónico."
+      console.log(response)
+      res.status(400).json(response)
+    }
+  });
+});
+
 // Player Register
 app.post('/register', function(req, res){
 
