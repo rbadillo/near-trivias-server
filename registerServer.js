@@ -314,6 +314,12 @@ app.post('/forgotpassword', function(req, res){
   });
 });
 
+app.get('/resetpassword', function(req,res){
+
+  res.sendFile(path.join(__dirname+'/public/error.html'));
+
+})
+
 // Player Register
 app.post('/register', function(req, res){
 
