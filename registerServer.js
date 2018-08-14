@@ -387,6 +387,7 @@ app.post('/register', function(req, res){
 
   var name=req.body.name
   var lastname=req.body.lastname
+  var nickname=req.body.nickname
   var age=req.body.age
   var email=req.body.email
   var country=req.body.country
@@ -417,8 +418,8 @@ app.post('/register', function(req, res){
     }
     else
     {
-      var user_query = "Insert into users (name,last_name,age,email,password,country,state,city,register_uuid) VALUES (?,?,?,?,?,?,?,?,?)"
-      var query_values = [name,lastname,age,email,password,country,state,city,register_uuid]
+      var user_query = "Insert into users (name,last_name,nickname,age,email,password,country,state,city,register_uuid) VALUES (?,?,?,?,?,?,?,?,?,?)"
+      var query_values = [name,lastname,nickname,age,email,password,country,state,city,register_uuid]
 
       //console.log("Query: ",user_query)
       //console.log("Query values: ",query_values)
