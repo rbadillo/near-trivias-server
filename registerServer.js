@@ -65,7 +65,8 @@ app.get('/leaderboard', function(req, res){
     "msg":""
   }
 
-  var user_query = "select player_winner,prize_description,DATE(when_created) as date from trivias_prizes order by id desc"
+  var user_query = "select player_winner,prize_description,DATE(when_created) as date \
+  from trivias_prizes where player_winner is not null order by id desc"
 
   pool.query(user_query, function (error, results, fields) {
     if (error)
