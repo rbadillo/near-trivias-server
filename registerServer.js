@@ -31,6 +31,34 @@ app.get('/', function(req, res){
   res.send('health check')
 });
 
+app.get('/nextgame', function(req, res){
+
+  var response = {
+    "msg":""
+  }
+
+  var user_query = "select prize_date,prize_description from trivias_prizes order by id DESC LIMIT 1"
+
+  pool.query(user_query, function (error, results, fields) {
+    if (error)
+    {
+      console.log(error)
+      response['msg']="Hubo un error en el servidor, por favor intenta de nuevo"
+      res.status(500).json(response)
+    }
+    else if(results.length)
+    {
+      res.status(200).json(results)
+    }
+    else
+    {
+      console.log(results)
+      response['msg']="Hubo un error en el servidor, por favor intenta de nuevo"
+      res.status(400).json(response)
+    }
+  });
+});
+
 app.get('/countries', function(req, res){
 
   var response = {
