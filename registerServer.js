@@ -59,6 +59,34 @@ app.get('/nextgame', function(req, res){
   });
 });
 
+app.get('/leaderboard', function(req, res){
+
+  var response = {
+    "msg":""
+  }
+
+  var user_query = "select player_winner,prize_description,DATE(when_created) as date from trivias_prizes"
+
+  pool.query(user_query, function (error, results, fields) {
+    if (error)
+    {
+      console.log(error)
+      response['msg']="Hubo un error en el servidor, por favor intenta de nuevo"
+      res.status(500).json(response)
+    }
+    else if(results.length)
+    {
+      res.status(200).json(results)
+    }
+    else
+    {
+      console.log(results)
+      response['msg']="Hubo un error en el servidor, por favor intenta de nuevo"
+      res.status(400).json(response)
+    }
+  });
+});
+
 app.get('/countries', function(req, res){
 
   var response = {
