@@ -37,7 +37,7 @@ app.get('/nextgame', function(req, res){
     "msg":""
   }
 
-  var user_query = "select prize_date,prize_description from trivias_prizes order by id DESC LIMIT 1"
+  var user_query = "select prize_date,prize_description,streaming_id from trivias_prizes order by id DESC LIMIT 1"
 
   pool.query(user_query, function (error, results, fields) {
     if (error)
