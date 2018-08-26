@@ -479,69 +479,69 @@ app.post('/register', function(req, res){
       var user_query = "Select nickname from users where nickname=?"
       var query_values = [nickname]
 
-        pool.query(user_query, query_values , function (error, results, fields) {
-          if (error)
-          {
-            console.log(error)
-            response['msg']="Hubo un error en el servidor, por favor intenta de nuevo"
-            res.status(500).json(response)
-          }
-          else if(results.length==1)
-          {
-            response['msg']="Lo sentimos pero un usuario con ese\nnickname ya fue registrado"
-            res.status(400).json(response)
-          }
-          else
-          {
+      pool.query(user_query, query_values , function (error, results, fields) {
+        if (error)
+        {
+          console.log(error)
+          response['msg']="Hubo un error en el servidor, por favor intenta de nuevo"
+          res.status(500).json(response)
+        }
+        else if(results.length==1)
+        {
+          response['msg']="Lo sentimos pero un usuario con ese\nnickname ya fue registrado"
+          res.status(400).json(response)
+        }
+        else
+        {
 
-              var user_query = "Insert into users (name,last_name,nickname,age,email,password,country,state,city,register_uuid) VALUES (?,?,?,?,?,?,?,?,?,?)"
-              var query_values = [name,lastname,nickname,age,email,password,country,state,city,register_uuid]
+            var user_query = "Insert into users (name,last_name,nickname,age,email,password,country,state,city,register_uuid) VALUES (?,?,?,?,?,?,?,?,?,?)"
+            var query_values = [name,lastname,nickname,age,email,password,country,state,city,register_uuid]
 
-              //console.log("Query: ",user_query)
-              //console.log("Query values: ",query_values)
+            //console.log("Query: ",user_query)
+            //console.log("Query values: ",query_values)
 
-              pool.query(user_query, query_values , function (error, results, fields) {
-                if (error)
-                {
-                  console.log(error)
-                  response['msg']="Hubo un error en el servidor, por favor intenta de nuevo"
-                  res.status(500).json(response)
+            pool.query(user_query, query_values , function (error, results, fields) {
+              if (error)
+              {
+                console.log(error)
+                response['msg']="Hubo un error en el servidor, por favor intenta de nuevo"
+                res.status(500).json(response)
+              }
+              else
+              {
+
+                var player_link_activation = "http://register-trivias.descubrenear.com/activate?uuid=" +register_uuid
+                html_template = html_template.replace("<USER_MSG>", "Gracias por registrarte en Trivias Near, da click en el link para activar tu cuenta.")
+                html_template = html_template.replace("<USER_LINK>", player_link_activation)
+                html_template = html_template.replace("<USER_BUTTON_MSG>", "Activar Cuenta")
+
+                var mailOptions = {
+                  from: 'no-reply@descubrenear.com', // sender address
+                  to: email, // list of receivers
+                  subject: 'Bienvenido a Trivias Near', // Subject line
+                  html: html_template
                 }
-                else
-                {
 
-                  var player_link_activation = "http://register-trivias.descubrenear.com/activate?uuid=" +register_uuid
-                  html_template = html_template.replace("<USER_MSG>", "Gracias por registrarte en Trivias Near, da click en el link para activar tu cuenta.")
-                  html_template = html_template.replace("<USER_LINK>", player_link_activation)
-                  html_template = html_template.replace("<USER_BUTTON_MSG>", "Activar Cuenta")
-
-                  var mailOptions = {
-                    from: 'no-reply@descubrenear.com', // sender address
-                    to: email, // list of receivers
-                    subject: 'Bienvenido a Trivias Near', // Subject line
-                    html: html_template
-                  }
-
-                  email_transporter.sendMail(mailOptions, function (error, info) {
-                     if(error)
-                     {
-                        console.log(error)
-                        response['msg']="Hubo un error en el servidor, por favor intenta de nuevo"
-                        res.status(500).json(response)
-                     }
-                     else
-                     {
-                        //console.log(info);
-                        response['msg']="Tu cuenta ha sido creada exitosamente.\nPor favor activa tu cuenta\ndando click en el link enviado\na tu correo electrónico.\n\nSi el correo no se encuentra en tu bandeja\nde entrada, revisa el correo no deseado."
-                        res.status(200).json(response)
-                     }
-                  });
-                }
-              });
-          }
-        })
-      }
-    });
+                email_transporter.sendMail(mailOptions, function (error, info) {
+                   if(error)
+                   {
+                      console.log(error)
+                      response['msg']="Hubo un error en el servidor, por favor intenta de nuevo"
+                      res.status(500).json(response)
+                   }
+                   else
+                   {
+                      //console.log(info);
+                      response['msg']="Tu cuenta ha sido creada exitosamente.\nPor favor activa tu cuenta\ndando click en el link enviado\na tu correo electrónico.\n\nSi el correo no se encuentra en tu bandeja\nde entrada, revisa el correo no deseado."
+                      res.status(200).json(response)
+                   }
+                });
+              }
+            });
+        }
+      })
+    }
+  });
 });
 
 
