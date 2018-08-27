@@ -5,9 +5,22 @@ var io = require('socket.io')(http);
 var port = process.env.PORT || 11000;
 var bodyParser = require('body-parser')
 var redis = require('redis');
+var mysql = require('mysql');
 
+// Express Middleware
 app.use(bodyParser.json());
+
+// Redis Client
 var redis_client = redis.createClient(6379, '127.0.0.1');
+
+// Mysql Client
+var pool  = mysql.createPool({
+  connectionLimit : 50,
+  host            : '127.0.0.1',
+  user            : 'root',
+  password        : 'EstaTrivialDb!',
+  database        : 'trivias_near'
+});
 
 // Helper Functions
 
@@ -145,6 +158,23 @@ app.post('/verify', function(req, res){
             // Delete all players who got the question wrong
             deletePlayers(players_redis_key_wrong_answer);
 
+            var user_query = "Update trivias_prizes SET player_winner=? Where id=max(id)"
+            var query_values = [winner_player]
+
+            //console.log("Query: ",user_query)
+            //console.log("Query values: ",query_values)
+
+            pool.query(user_query, query_values , function (error, results, fields) {
+              if (error)
+              {
+                console.log(error)
+              }
+              else
+              {
+                console.log(results)
+                console.log(response)
+              }
+            });
         }
         else if( (keys.length - players_redis_key_wrong_answer.length) == 0)
         {
@@ -161,7 +191,6 @@ app.post('/verify', function(req, res){
             // Delete all players who got the question wrong
             deletePlayers(players_redis_key_wrong_answer);
         }
-
 
         redis_client.hmset('players_answer_distribution', {
             '1': 0,
