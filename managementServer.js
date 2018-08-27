@@ -152,6 +152,7 @@ app.post('/verify', function(req, res){
             var winner_msg = "Felicidades, " +winner_player +" ganaste Trivias Near!"
 
             last_question["final_message"] = winner_msg
+            last_question["tie"] = 0
 
             io.emit('end_game',last_question)
 
@@ -179,7 +180,6 @@ app.post('/verify', function(req, res){
                   else
                   {
                     console.log(results)
-                    console.log(response)
                   }
                 });
               }
@@ -192,11 +192,13 @@ app.post('/verify', function(req, res){
             console.log("Everybody was incorrect")
 
             last_question["final_message"] = "Nadie obtuvo la respuesta correcta, sigamos jugando"
+            last_question["tie"] = 1
 
             io.emit('verify_answer',last_question)
         }
         else
         {
+            last_question["tie"] = 0
             io.emit('verify_answer',last_question)
 
             // Delete all players who got the question wrong
