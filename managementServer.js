@@ -9,12 +9,33 @@ var redis = require('redis');
 app.use(bodyParser.json());
 var redis_client = redis.createClient(6379, '127.0.0.1');
 
+// Helper Functions
+
+// Delete all the players who got the question wrong
+function deletePlayers(player_array){
+  for(var i=0; i<player_array.length; i++)
+  {
+      var tmp_key = player_array[i];
+
+      redis_client.del(tmp_key, function(err, reply) {
+          if(err)
+          {
+            console.log("Error deleting key: " +tmp_key)
+          }
+          else
+          {
+            console.log("Key deleted: " +tmp_key)
+          }
+      });
+  }
+}
+
 // LB Health Check
 app.get('/', function(req, res){
   res.send('health check')
 });
 
-// Trivia Near - Posting a new question
+// Trivias Near - Posting a new question
 app.post('/', function(req, res){
 
   redis_client.exists('is_game_on', function(err, reply){
@@ -48,9 +69,11 @@ app.post('/', function(req, res){
   });
 });
 
+// Trivias Near - Verify Question
 app.post('/verify', function(req, res){
 
   var last_question = req.body
+  var players_redis_key_wrong_answer = [];
 
   redis_client.keys("player_*", function(err, keys) {
 
@@ -61,16 +84,18 @@ app.post('/verify', function(req, res){
 
       redis_client.hgetall(tmp_key, function(err, object) {
 
+        // Delete Player Key from Redis
         if(object.answer != last_question.answer)
         {
 
-          console.log("Game over for: " +tmp_key)
-          redis_client.del(tmp_key, function(err, reply) {
-              if(err)
-              {
-                console.log("Error deleting key: " +tmp_key)
-              }
-          });
+          console.log("Wrong Answer: " +tmp_key)
+          players_redis_key_wrong_answer.push(tmp_key)
+          //redis_client.del(tmp_key, function(err, reply) {
+            //  if(err)
+              //{
+                //console.log("Error deleting key: " +tmp_key)
+              //}
+          //});
         }
       });
     }
@@ -105,30 +130,38 @@ app.post('/verify', function(req, res){
         console.log(keys)
         console.log(keys.length)
 
-        if(keys.length==1)
+        if( (keys.length - players_redis_key_wrong_answer.length) == 1)
         {
-          console.log("WE HAVE A WINNER")
+            console.log("WE HAVE A WINNER")
 
-          var winner_player = keys[0]
-          winner_player = winner_player.split("player_")[1]
-          var winner_msg = "Felicidades, " +winner_player +" ganaste Trivias Near!"
+            var winner_player = keys[0]
+            winner_player = winner_player.split("player_")[1]
+            var winner_msg = "Felicidades, " +winner_player +" ganaste Trivias Near!"
 
-          last_question["final_message"] = winner_msg
+            last_question["final_message"] = winner_msg
 
-          io.emit('end_game',last_question)
+            io.emit('end_game',last_question)
+
+            // Delete all players who got the question wrong
+            deletePlayers(players_redis_key_wrong_answer);
+
         }
-        else if(keys.length==0)
+        else if( (keys.length - players_redis_key_wrong_answer.length) == 0)
         {
-          console.log("WE HAVE A TIE")
+            console.log("Everybody was incorrect")
 
-          last_question["final_message"] = "Lo sentimos pero tuvimos un empate"
+            last_question["final_message"] = "Nadie obtuvo la respuesta correcta, sigamos jugando"
 
-          io.emit('end_game',last_question)
+            io.emit('verify_answer',last_question)
         }
         else
         {
-          io.emit('verify_answer',last_question)
+            io.emit('verify_answer',last_question)
+
+            // Delete all players who got the question wrong
+            deletePlayers(players_redis_key_wrong_answer);
         }
+
 
         redis_client.hmset('players_answer_distribution', {
             '1': 0,
