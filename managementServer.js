@@ -158,23 +158,34 @@ app.post('/verify', function(req, res){
             // Delete all players who got the question wrong
             deletePlayers(players_redis_key_wrong_answer);
 
-            var user_query = "Update trivias_prizes SET player_winner=? Where id=max(id)"
-            var query_values = [winner_player]
+            var user_query = "select Max(id) as id from trivias_prizes"
 
-            //console.log("Query: ",user_query)
-            //console.log("Query values: ",query_values)
-
-            pool.query(user_query, query_values , function (error, results, fields) {
+            pool.query(user_query, function (error, results, fields) {
               if (error)
               {
                 console.log(error)
               }
               else
               {
-                console.log(results)
-                console.log(response)
+                
+                var user_query = "Update trivias_prizes SET player_winner=? Where id=?"
+                var query_values = [winner_player,results[0].id]
+
+                pool.query(user_query, query_values , function (error, results, fields) {
+                  if (error)
+                  {
+                    console.log(error)
+                  }
+                  else
+                  {
+                    console.log(results)
+                    console.log(response)
+                  }
+                });
               }
             });
+
+
         }
         else if( (keys.length - players_redis_key_wrong_answer.length) == 0)
         {
