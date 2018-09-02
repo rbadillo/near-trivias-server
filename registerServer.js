@@ -546,6 +546,56 @@ app.post('/register', function(req, res){
   });
 });
 
+// Player Register
+app.put('/player/token', function(req, res){
+
+  var nickname=req.body.nickname
+  var push_token=req.body.push_token
+
+  var response = {
+    "msg":""
+  }
+
+  if(push_token.length && nickname.length)
+  {
+      var user_query = "UPDATE users SET push_token where nickname=?"
+      var query_values = [nickname]
+
+      pool.query(user_query, query_values , function (error, results, fields) {
+        if (error)
+        {
+          console.log("Error Updating User: " +nickname +" - Push Token: " +push_token)
+          console.log(error)
+          response['msg']="Hubo un error en el servidor, por favor intenta de nuevo"
+          res.status(500).json(response)
+        }
+        else
+        {
+          response['msg']="User Push Token Updated Sucessfully"
+          res.status(200).json(response)
+        }
+      })
+  }
+  else if(!nickname.length)
+  {
+      response['msg']="Empty Nickname"
+      console.log(req.body)
+      res.status(400).json(response)
+  }
+  else if(!push_token.length)
+  {
+      response['msg']="Empty Push Token"
+      console.log(req.body)
+      res.status(400).json(response)
+  }
+  else
+  {
+      response['msg']="Invalid PUT Body"
+      console.log(req.body)
+      res.status(400).json(response)
+  }
+})
+
 
 http.listen(port, function(){
 
