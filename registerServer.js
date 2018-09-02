@@ -558,8 +558,8 @@ app.put('/player/push_token', function(req, res){
 
   if(push_token.length && nickname.length)
   {
-      var user_query = "UPDATE users SET push_token where nickname=?"
-      var query_values = [nickname]
+      var user_query = "UPDATE users SET push_token=? where nickname=?"
+      var query_values = [push_token,nickname]
 
       pool.query(user_query, query_values , function (error, results, fields) {
         if (error)
