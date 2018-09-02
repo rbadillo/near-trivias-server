@@ -547,7 +547,7 @@ app.post('/register', function(req, res){
 });
 
 // Player Register
-app.put('/player/token', function(req, res){
+app.put('/player/push_token', function(req, res){
 
   var nickname=req.body.nickname
   var push_token=req.body.push_token
