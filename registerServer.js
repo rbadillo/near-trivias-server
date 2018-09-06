@@ -27,7 +27,7 @@ var pool  = mysql.createPool({
 // JSON parser
 app.use(bodyParser.json());
 // Server Logging
-app.use(morgan('combined'));
+app.use(morgan(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :response-time ms - :res[content-length] ":referrer" ":user-agent"'));
 
 // LB Health Check
 app.get('/', function(req, res){
