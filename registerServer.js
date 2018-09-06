@@ -9,6 +9,7 @@ var uuid=require('uuid')
 var nodemailer = require('nodemailer');
 var fs = require('fs');
 var path = require('path');
+var morgan = require('morgan')
 
 // Global variables
 var html_template = ""
@@ -25,6 +26,8 @@ var pool  = mysql.createPool({
 
 // JSON parser
 app.use(bodyParser.json());
+// Server Logging
+app.use(morgan('combined'));
 
 // LB Health Check
 app.get('/', function(req, res){

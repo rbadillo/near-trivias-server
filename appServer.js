@@ -6,8 +6,13 @@ var io_client = require('socket.io-client');
 var port = process.env.PORT || 10000;
 var bodyParser = require('body-parser')
 var redis = require('redis');
+var morgan = require('morgan')
 
+// JSON parser
 app.use(bodyParser.json());
+// Server Logging
+app.use(morgan('combined'));
+
 var redis_client = redis.createClient(6379, '127.0.0.1');
 var mgmt_socket_client = null;
 

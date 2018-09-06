@@ -6,9 +6,12 @@ var port = process.env.PORT || 11000;
 var bodyParser = require('body-parser')
 var redis = require('redis');
 var mysql = require('mysql');
+var morgan = require('morgan')
 
-// Express Middleware
+// JSON parser
 app.use(bodyParser.json());
+// Server Logging
+app.use(morgan('combined'));
 
 // Redis Client
 var redis_client = redis.createClient(6379, '127.0.0.1');
